@@ -62,26 +62,22 @@ Route::middleware('auth:sanctum')->group(function(){
     });
 
     Route::prefix('expert')->group(function(){
-        // Route::resource('profile',ProfileController::class);
         Route::prefix('/profile')->group(function(){
             Route::get('/{user_id}',[ProfileController::class,'show']);
             Route::post('/{user_id}',[ProfileController::class,'update']);
         });
-
-        // Route::resource('service', ServiceController::class);
         Route::prefix('service')->group(function(){
             Route::get('/',[ServiceController::class,'index']);
             Route::get('/{id}',[ServiceController::class,'show']);
             Route::post('/',[ServiceController::class,'store']);
-
         });
 
+        Route::get('book_service',[BookingServiceController::class,'index']);
         Route::get('book_service/{book_id}',[BookingServiceController::class,'show']);
-
+        Route::put('book_service/{book_id}',[BookingServiceController::class,'update']);
     });
 
     Route::prefix('customer')->group(function(){
-        // Route::resource('profile',ProfileController::class);
         Route::prefix('/profile')->group(function(){
             Route::get('/{user_id}',[ProfileController::class,'show']);
             Route::post('/{user_id}',[ProfileController::class,'update']);

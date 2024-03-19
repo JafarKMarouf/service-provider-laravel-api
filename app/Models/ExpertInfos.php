@@ -24,5 +24,8 @@ class ExpertInfos extends Model
         return $this->belongsTo(User::class,'expert_id','id');
     }
 
+    // public function book_service(){
+    //     return $this->hasMany(BookService::class,);
+    // }
     // public function where();
 }

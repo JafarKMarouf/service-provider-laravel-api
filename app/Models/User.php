@@ -52,17 +52,8 @@ class User extends Authenticatable
     {
         return $this->hasOne(CustomerInfos::class,'customer_id');
     }
-    public function bookService(){
-        return $this->hasMany(BookService::class);
-    }
-
-    public function sentMessages(){
-        return $this->hasMany(ChatMessage::class,'sender_id');
-    }
-
-    public function receivedMessages(){
-        return $this->hasMany(ChatMessage::class,'receive_id');
-    }
-
+    // public function bookService(){
+    //     return $this->hasMany(BookService::class,'');
+    // }
 
 }

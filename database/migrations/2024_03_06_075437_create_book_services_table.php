@@ -23,7 +23,7 @@ return new class extends Migration
                   ->cascadeOnUpdate();
             $table->string('description')->nullable();
             $table->string('delivery_time');
-            $table->enum('status',['pending','proccess','finished'])->default('pending');
+            $table->enum('status',['pending','process','rejected','finished'])->default('pending');
             $table->unique(['customer_id','service_id']);
             $table->timestamps();
         });

@@ -13,18 +13,47 @@ class BookingServiceController extends Controller
     public function index()
     {
         try{
-
             if(auth()->user()->role == 'admin'){
                 $book_service = BookService::query()
-                ->with('customer:id,name,email','customer.customerInfos:customer_id,mobile,city')
-                ->with('service','service.expert','service.expert.expertInfos','service.category')
+                ->with('customer:id,name','customer.customerInfos:customer_id,mobile,city')
+                ->with('service:id,expert_id,photo','service.expert:id','service.expert.expertInfos:id,expert_id,mobile',)
                 ->get();
                 return response()->json([
                     'status' => 'success',
                     'data' => $book_service,
                 ],200);
             }
+            if(auth()->user()->role == 'customer'){
+                $book_service = BookService::query()
+                    ->where('customer_id',auth()->user()->id)->get();
+                return response()->json([
+                    'status' => 'success',
+                    'data' => $book_service,
+                ],200);
+            }
 
+            if(auth()->user()->role == 'expert'){
+                $service_id =  Service::query()
+                    ->where('expert_id',auth()->user()->id)
+                    ->get('id');
+                $book_service = [];
+
+                for($i = 0; $i < count($service_id); $i++){
+                    $book_service_for_expert = BookService::query()
+                    ->where('service_id',$service_id[$i]['id'])
+                    ->get();
+                    if($book_service_for_expert->count() != 0){
+                        $book_service[$service_id[$i]['id']] = $book_service_for_expert;
+                    }
+
+                }
+                return response()->json([
+                    'status' => 'success',
+                    'data' => $book_service
+                ],200);
+                // return $book_service;
+
+            }
 
         }
         catch (\Exception $e) {
@@ -147,7 +176,7 @@ class BookingServiceController extends Controller
         }
     }
 
-    public function update(Request $request, string $book_id)
+    public function update(Request $request, int $book_id)
     {
         try {
             if (empty(BookService::find($book_id))) {
@@ -156,17 +185,42 @@ class BookingServiceController extends Controller
                     'message' => 'Book service is not found',
                 ]);
             }
-            if (auth()->user()->role == 'customer') {
-                $customer = BookService::query()
+            if (auth()->user()->role == 'expert') {
+                $expert_id = BookService::query()
                                         ->find($book_id)
-                                        ->customer
-                                        ->id;
-                if ($customer != auth()->user()->id) {
+                                        ->service
+                                        ->expert_id;
+
+                if ($expert_id != auth()->user()->id) {
                     return response()->json([
                         'status' => 'failed',
                         'message' => 'Permission denied',
                     ], 403);
                 }
+                $validate = Validator::make($request->all(),[
+                    'status' => ['required'],
+                    'delivery_time' => 'string'
+                ]);
+
+                if($validate->fails()){
+                    return response()->json([
+                        'status' => 'failed',
+                        'message' => $validate->errors(),
+                    ], 403);
+                }
+                // return [$request->status,BookService::query()->where('id',$book_id)->get('status')] ;
+                $book_service = BookService::query()->find($book_id);
+                $book_service->update([
+                    'status' => $request->status,
+                    'delivery_time' => $request->delivery_time,
+                ]);
+                // $book_service->status = $request->status;
+                // $book_service->save();
+                return response()->json([
+                    'status' => 'success',
+                    'book_service' => $book_service,
+                    'message' => 'Book service Updated Successfully',
+                ]);
 
             }
         } catch (\Exception $e) {

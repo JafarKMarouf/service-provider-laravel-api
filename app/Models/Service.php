@@ -15,7 +15,7 @@ class Service extends Model
         'service_name',
         'service_description',
         'price',
-
+        'photo',
     ];
 
     public function category(){
@@ -25,4 +25,9 @@ class Service extends Model
     public function expert(){
         return $this->belongsTo(User::class,'expert_id','id');
     }
+
+    public function book_service(){
+        return $this->hasMany(BookService::class,'service_id','id');
+    }
+
 }

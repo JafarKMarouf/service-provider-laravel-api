@@ -99,12 +99,11 @@ class ManageUserController extends Controller
                 }
 
                 $user = User::find($id);
-
                 $role = User::query()
                     ->where('id', $id)
                     ->where('role', '!=', 'admin')
                     ->get();
-                if (!empty($role)) {
+                if (empty($role)) {
                     return response()->json([
                         'status' => 'failed',
                         'message' => 'user not found or role is admin and can not change it'

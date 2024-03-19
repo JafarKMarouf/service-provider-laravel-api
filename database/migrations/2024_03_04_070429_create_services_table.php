@@ -23,6 +23,7 @@ return new class extends Migration
                 ->cascadeOnUpdate();
             $table->string('service_name');
             $table->string('service_description');
+            $table->string('photo')->nullable();
             $table->double('price');
 
             $table->timestamps();

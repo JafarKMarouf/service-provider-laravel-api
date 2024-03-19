@@ -25,4 +25,5 @@ class BookService extends Model
         return $this->belongsTo(Service::class,'service_id','id');
     }
 
+    
 }
