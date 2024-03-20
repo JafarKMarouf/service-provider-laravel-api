@@ -24,6 +24,7 @@ class BookingServiceController extends Controller
                 ],200);
             }
             if(auth()->user()->role == 'customer'){
+                // return auth()->user()->id;
                 $book_service = BookService::query()
                     ->where('customer_id',auth()->user()->id)->get();
                 return response()->json([
@@ -183,7 +184,7 @@ class BookingServiceController extends Controller
                 return response()->json([
                     'status' => 'failed',
                     'message' => 'Book service is not found',
-                ]);
+                ],403);
             }
             if (auth()->user()->role == 'expert') {
                 $expert_id = BookService::query()
@@ -234,8 +235,36 @@ class BookingServiceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($book_id)
     {
-        //
+        try{
+            if (empty(BookService::find($book_id))) {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Book service is not found',
+                ],403);
+            }
+            $book_service = BookService::query()
+                ->find($book_id)
+                ->where('customer_id',auth()->user()->id)
+                ->delete();
+            if(!$book_service){
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Permission denied',
+                ], 403);
+            }
+            return response()->json([
+                'status' => 'sucess',
+                'message' => 'Book Service Deleted Successfully'
+            ],200);
+
+        }
+        catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
