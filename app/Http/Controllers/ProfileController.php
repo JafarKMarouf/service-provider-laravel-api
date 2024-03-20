@@ -65,7 +65,8 @@ class ProfileController extends Controller
 
     public function update(Request $request,$user_id)
     {
-        // return $request;
+
+        // return $request->all();
         try{
             $id = auth()->user()->id;
             if($user_id != $id){
@@ -113,6 +114,7 @@ class ProfileController extends Controller
             if($role == 'expert'){
                 $expert_id = ExpertInfos::where('expert_id',$user_id)->value('id');
                 $expert = ExpertInfos::find($expert_id);
+                // return
                 if ($request->photo!=null) {
                     $photo = $request->file('photo');
                     $filename = trim($user->name) . '_' . time() . '.' .

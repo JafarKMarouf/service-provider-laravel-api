@@ -30,6 +30,7 @@ class CustomerInfosFactory extends Factory
             'mobile' => fake()->unique()->phoneNumber,
             'city' => fake()->city,
             'country' => fake()->country,
+            'photo' => fake()->imageUrl('640','640'),
         ];
     }
 }

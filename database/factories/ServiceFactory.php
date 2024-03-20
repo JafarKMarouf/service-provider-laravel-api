@@ -24,6 +24,7 @@ class ServiceFactory extends Factory
             'category_id' => Category::where('id' , $this->faker->numberBetween(1,10))->first(),
             'service_name' => fake()->unique()->word,
             'service_description' => fake()->sentence,
+            'photo' => fake()->imageUrl('640','640'),
             'price' => fake()->randomFloat(2,10,10000),
         ];
     }

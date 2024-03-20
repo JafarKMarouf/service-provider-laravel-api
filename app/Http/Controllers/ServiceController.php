@@ -44,6 +44,7 @@ class ServiceController extends Controller
 
     public function store(Request $request)
     {
+        // return $request->all();
         try{
             if(auth()->user()->role == 'expert'){
                 $validate = Validator::make($request->all(),[
@@ -52,7 +53,8 @@ class ServiceController extends Controller
                     'service_name' => 'required|string|max:25|unique:services',
                     'service_description' => 'required|string|min:20',
                     'price' => 'required',
-                    'work_time' => 'required'
+                    'work_time' => 'required',
+                    'photo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
                 ]);
 
                 if ($validate->fails()) {
@@ -61,12 +63,21 @@ class ServiceController extends Controller
                         'message' => $validate->errors(),
                     ], 403);
                 }
+                $filename = '';
+                $file = str($request->service_name.'_'.auth()->user()->name)->lower()->remove(' ');
+                if ($request->photo!=null) {
+                    $photo = $request->file('photo');
+                    $filename = $file . '_' . time() . '.' .$photo->getClientOriginalExtension();
+                    $photo->storeAs('public/services/photos', $filename);
+                }
+                // return $filename;
                 $service = Service::create([
                     'expert_id' => auth()->user()->id,
                     'category_id' => $request->category_id,
                     'service_name' => $request->service_name,
                     'service_description' => $request->service_description,
                     'price' => $request->price,
+                    'photo' => $filename,
                     'work_time' => $request->work_time,
                 ]);
                 return response()->json([

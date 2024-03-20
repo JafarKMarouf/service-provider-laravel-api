@@ -25,7 +25,6 @@ return new class extends Migration
             $table->string('service_description');
             $table->string('photo')->nullable();
             $table->double('price');
-
             $table->timestamps();
         });
     }

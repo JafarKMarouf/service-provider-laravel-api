@@ -35,7 +35,7 @@ class ExpertInfosFactory extends Factory
                 'working_hours' => fake()->time,
                 'description' => fake()->sentence,
                 'certificate' => fake()->sentence,
-                // 'photo' => fake()->image(),
+                'photo' => fake()->imageUrl('640','640'),
             ];
 
     }
