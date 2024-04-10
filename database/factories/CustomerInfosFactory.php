@@ -20,6 +20,7 @@ class CustomerInfosFactory extends Factory
     {
         $faker = fake()->unique()->userName();
         static $counter = 0;
+        static $photo = 0;
         return [
             'customer_id' => User::factory()->create([
                 'name' => $faker,
@@ -30,7 +31,9 @@ class CustomerInfosFactory extends Factory
             'mobile' => fake()->unique()->phoneNumber,
             'city' => fake()->city,
             'country' => fake()->country,
-            'photo' => fake()->imageUrl('640','640'),
+            'photo' => 'https://picsum.photos/id/'.$photo++.'/5000/3333',
+
+            // 'photo' => fake()->imageUrl('640','640'),
         ];
     }
 }

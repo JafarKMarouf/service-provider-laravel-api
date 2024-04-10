@@ -27,7 +27,7 @@ class Service extends Model
     }
 
     public function book_service(){
-        return $this->hasMany(BookService::class,'service_id','id');
+        return $this->hasMany(BookService::class,'service_id','id',);
     }
 
 }

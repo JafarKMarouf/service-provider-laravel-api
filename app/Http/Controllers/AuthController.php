@@ -57,7 +57,7 @@ class AuthController extends Controller
             $response = [
                 'status' => 'success',
                 'data' => $data,
-                'message' => $request->role . ' is Created successfully.',
+                'message' => $request->role . ' is Created successfully, a verification code has been sent to your email',
             ];
 
             return response()->json($response, 201);
@@ -69,7 +69,6 @@ class AuthController extends Controller
             ], 500);
         }
     }
-
     public function login(Request $request)
     {
         try {
@@ -91,7 +90,7 @@ class AuthController extends Controller
                 return response()->json([
                     'status'  => 'failed',
                     'message' => 'user ' . $request->email . ' not exists.'
-                ], 404);
+                ], 403);
             }
             if (!Hash::check($request->password, $user->password)) {
                 return response()->json([

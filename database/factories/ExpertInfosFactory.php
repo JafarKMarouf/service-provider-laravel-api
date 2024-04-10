@@ -22,6 +22,7 @@ class ExpertInfosFactory extends Factory
     {
         $faker = fake()->unique()->userName();
        static $counter = 0;
+       static $photo  =0 ;
         return [
                 'expert_id' => User::factory()->create([
                     'name' => $faker,
@@ -35,7 +36,7 @@ class ExpertInfosFactory extends Factory
                 'working_hours' => fake()->time,
                 'description' => fake()->sentence,
                 'certificate' => fake()->sentence,
-                'photo' => fake()->imageUrl('640','640'),
+                'photo' => 'https://picsum.photos/id/'.$photo++.'/5000/3333',
             ];
 
     }

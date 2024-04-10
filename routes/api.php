@@ -27,7 +27,6 @@ Route::post('login',[AuthController::class,'login'])->name('login');
 
 Route::middleware(['auth:sanctum'])->group(
     function(){
-
         Route::prefix('email_verification')->group(function(){
             Route::get('/send',[EmailVerificationController::class,'sendVerificationEmail']);
             Route::post('/verify',[EmailVerificationController::class,'emailVerification']);
@@ -78,7 +77,7 @@ Route::middleware(['auth:sanctum'])->group(
             Route::prefix('/profile')->group(function(){
                 Route::get('/{user_id}',[ProfileController::class,'show']);
                 Route::post('/{user_id}',[ProfileController::class,'update']);
-                Route::delete('/{id}',[ProfileController::class,'destroy']);
+                Route::delete('/{user_id}',[ProfileController::class,'destroy']);
             });
 
             Route::prefix('service')->group(function(){

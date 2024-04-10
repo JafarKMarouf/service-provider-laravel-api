@@ -39,7 +39,7 @@ class EmailVerificationController extends Controller
                 $otp2 = $this->otp->validate( $request->email,$request->otp);
                 if(!$otp2->status){
                     return response()->json([
-                        "status"=> false,
+                        "status"=> 'false',
                         'error ' => $otp2,
                     ],401);
                 }
@@ -47,8 +47,9 @@ class EmailVerificationController extends Controller
                 $user->email_verified_at = now();
                 $user->save();
                 return response()->json([
-                    'status'=>true,
-                    'user' => $user
+                    'status'=>'true',
+                    'user' => $user,
+                'message' => 'Email Verified Successfully',
                     ],200);
             }
             catch (\Exception $e) {

@@ -30,13 +30,14 @@ class ProfileController extends Controller
                     'description',
                     'working_hours',
                     'photo',
-                    'certificate')
+                    'certificate',
+                    )
                 ->where('expert_id' ,$user_id)
                 ->with('expert:id,name,email,role')
                 ->get();
                 return response()->json([
                     'status' => 'success',
-                    'data' => $expert,
+                    'expert_infos' => $expert,
                 ],200);
             }
             else if(auth()->user()->role == 'customer'){
@@ -51,7 +52,7 @@ class ProfileController extends Controller
                 ->get();
                 return response()->json([
                     'status' => 'success',
-                    'data' => $customer,
+                    'customer_infos' => $customer,
                 ],200);
             }
         }
