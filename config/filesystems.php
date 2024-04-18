@@ -43,7 +43,25 @@ return [
             'visibility' => 'public',
             'throw' => false,
         ],
-
+		
+		'services' => [
+			'driver' => 'local',
+			'root' => storage_path('app/public/services'),
+			'url' => env('APP_URL').'/storage',
+			'visibility' => 'public'
+		],
+		'customers' => [
+			'driver' => 'local',
+			'root' => storage_path('app/public/customers'),
+			'url' => env('APP_URL') . '/storage',
+			'visibility' => 'public'
+		],
+		'experts' => [
+			'driver' => 'local',
+			'root' => storage_path('app/public/experts'),
+			'url' => env('APP_URL') . '/storage',
+			'visibility' => 'public'
+		],
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

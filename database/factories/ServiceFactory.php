@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\ExpertInfos;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\URL;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Service>
@@ -25,8 +26,9 @@ class ServiceFactory extends Factory
             'category_id' => Category::where('id' , $this->faker->numberBetween(1,10))->first(),
             'service_name' => fake()->unique()->word,
             'service_description' => fake()->sentence,
-            'photo' => 'https://picsum.photos/id/'.$id++.'/5000/3333',
             'price' => fake()->randomFloat(2,10,10000),
+			'photo' => URL::to('/') . '/storage/services/' . time() . '.png',
+
         ];
     }
 }
