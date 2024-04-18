@@ -28,7 +28,6 @@ class ServiceFactory extends Factory
             'service_description' => fake()->sentence,
             'price' => fake()->randomFloat(2,10,10000),
 			'photo' => URL::to('/') . '/storage/services/' . time() . '.png',
-
         ];
     }
 }

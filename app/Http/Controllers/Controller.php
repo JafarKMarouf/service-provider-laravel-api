@@ -13,9 +13,8 @@ class Controller extends BaseController
 
 	public function saveImage($image, $ext, $path = '/public')
 	{
-
 		$filename = time() . '.' . $ext;
-		$image->storeAs($filename, $image);
+		$image->storeAs('public/' . $path, $filename);
 		return URL::to('/') . '/storage/' . $path . '/' . $filename;
 	}
 }
