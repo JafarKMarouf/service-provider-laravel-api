@@ -66,6 +66,7 @@ Route::middleware(['auth:sanctum'])->group(
                 Route::get('/',[ServiceController::class,'index']);
                 Route::get('/{id}',[ServiceController::class,'show']);
                 Route::post('/',[ServiceController::class,'store']);
+                Route::post('/{id}',[ServiceController::class,'update']);
             });
 
             Route::get('book_service',[BookingServiceController::class,'index']);

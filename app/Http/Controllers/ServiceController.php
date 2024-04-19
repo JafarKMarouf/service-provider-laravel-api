@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Service;
+use Google\Service\CloudFunctions\Retry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -62,18 +63,9 @@ class ServiceController extends Controller
 					], 403);
 				}
 
-				//$filename = '';
-				//$file = str($request->service_name.'_'.auth()->user()->name)->lower()->remove(' ');
-				//if ($request->photo!=null) {
-				//    $photo = $request->file('photo');
-				//    $filename = $file . '_' . time() . '.' .$photo->getClientOriginalExtension();
-				//    $photo->storeAs('public/services/photos', $filename);
-				//}
-
 				$ext = $request->file('photo')->getClientOriginalExtension();
 				$filename = $this->saveImage($request->photo, $ext, 'services');
 
-				// return $filename;
 				$service = Service::create([
 					'expert_id' => auth()->user()->id,
 					'category_id' => $request->category_id,
@@ -107,10 +99,16 @@ class ServiceController extends Controller
 			}
 
 			if (auth()->user()->role == 'expert') {
+				$expert_id = Service::where('id', $id)->value('expert_id');
 
+				if ($expert_id != auth()->user()->id) {
+					return response()->json([
+						'success' => 'failed',
+						'message' => 'Permission deined',
+					], 401);
+				}
 				$service = Service::query()
 					->where('id', $id)
-					->where('expert_id', auth()->user()->id)
 					->with('category:id,title,description')
 					->get();
 
@@ -139,9 +137,82 @@ class ServiceController extends Controller
 	}
 
 
-	public function update(Request $request, string $id)
+	public function update(Request $request, int $id)
 	{
-		//
+		//return [Service::find($id),auth()->user()->id];
+		try {
+			$service = Service::find($id);
+			//return $service->value('expert_id');
+			//return $service;
+			if (!$service) {
+				return response()->json([
+					'status' => 'failed',
+					'message' => 'Service not found'
+				], 404);
+			}
+			$expert_id = Service::where('id', $id)->value('expert_id');
+
+			//return [$expert_id,auth()->user()->id];
+			if ($expert_id != auth()->user()->id) {
+				return response()->json([
+					'status' => 'failed',
+					'message' => 'Permission deined',
+				], 401);
+			}
+
+			$validate = Validator::make($request->all(), [
+				'user_id' => 'exists:users,id|',
+				'category_id' => 'exists:categories,id',
+				'service_name' => 'string|max:25|unique:services',
+				'service_description' => 'string|min:20',
+				'photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+			]);
+
+			if ($validate->fails()) {
+				return response()->json([
+					'status' => 'failed',
+					'message' => $validate->errors(),
+				], 403);
+			}
+
+			if ($request->hasFile('photo')) {
+				$ext = $request->file('photo')->getClientOriginalExtension();
+				$filename = $this->saveImage($request->photo, $ext, 'services');
+				$service->photo = $filename;
+			}
+
+			if ($request->service_name != null) {
+				$service->service_name = $request->service_name;
+			}
+
+			if ($request->service_description != null) {
+				$service->service_description = $request->service_description;
+			}
+
+			if ($request->category_id != null) {
+				$service->category_id = $request->category_id;
+			}
+
+			if ($request->price != null) {
+				$service->price = $request->price;
+			}
+			if ($request->work_time != null) {
+				$service->work_time = $request->work_time;
+			}
+
+			$service->save();
+
+			return response()->json([
+				'status' => 'success',
+				'service' => $service,
+				'message' => 'Service udpated successfully'
+			], 200);
+		} catch (\Exception $e) {
+			return response()->json([
+				'status' => 'error',
+				'message' => $e->getMessage(),
+			], 500);
+		}
 	}
 
 	public function destroy(string $id)
