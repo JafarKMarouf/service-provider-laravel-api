@@ -25,12 +25,23 @@ class BookingServiceController extends Controller
 				], 200);
 			}
 			if (auth()->user()->role == 'customer') {
-				$book_service = BookService::query()
+
+				$customer = BookService::query()
 					->where('customer_id', auth()->user()->id)
+					->value('customer_id');
+				if ($customer != auth()->user()->id) {
+					return response()->json([
+						'status' => 'failed',
+						'message' => 'Permission denied',
+					], 403);
+				}
+				$book_service = BookService::query()
+					->where('customer_id', $customer)
+					->with('service:id,service_name,photo,price,expert_id', 'service.expert:id,name,email,role', 'service.expert.expertInfos')
 					->get();
 				return response()->json([
 					'status' => 'success',
-					'data' => $book_service,
+					'data' => $book_service
 				], 200);
 			}
 
@@ -130,7 +141,7 @@ class BookingServiceController extends Controller
 				}
 				$book_service = BookService::query()
 					->where('id', $book_id)
-					->with('service:id,service_name,expert_id', 'service.expert:id,name,email,role', 'service.expert.expertInfos')
+					->with('service:id,service_name,photo,price,expert_id', 'service.expert:id,name,email,role', 'service.expert.expertInfos')
 					// ->with('customer:id,name,role')
 					->get();
 				return response()->json([
