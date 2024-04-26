@@ -25,10 +25,20 @@ class BookingServiceController extends Controller
 				], 200);
 			}
 			if (auth()->user()->role == 'customer') {
-
+                $count =   BookService::query()
+                            ->where('customer_id',auth()->user()->id)
+                            ->count();
+                if(!$count > 0){
+                    return response()->json([
+                        'status' => 'failed',
+                        'message' => 'Not Found any book service for you',
+                    ],404);
+                }
 				$customer = BookService::query()
 					->where('customer_id', auth()->user()->id)
 					->value('customer_id');
+                    // return $customer;
+                // if()
 				if ($customer != auth()->user()->id) {
 					return response()->json([
 						'status' => 'failed',
@@ -41,6 +51,7 @@ class BookingServiceController extends Controller
 					->get();
 				return response()->json([
 					'status' => 'success',
+					'count ' => count($book_service),
 					'data' => $book_service
 				], 200);
 			}
@@ -252,8 +263,11 @@ class BookingServiceController extends Controller
 					'message' => 'Book service is not found',
 				], 403);
 			}
+			//return $book_service = BookService::query()
+			//->where('id', $book_id)
+			//->where('customer_id', auth()->user()->id)->get();
 			$book_service = BookService::query()
-				->find($book_id)
+				->where('id', $book_id)
 				->where('customer_id', auth()->user()->id)
 				->delete();
 			if (!$book_service) {

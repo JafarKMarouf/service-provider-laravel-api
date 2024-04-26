@@ -12,18 +12,18 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class BooKServiceFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
-    {
-        return [
-            'customer_id' => CustomerInfos::where('id' , $this->faker->unique()->numberBetween(1,5))->value('customer_id'),
-            'service_id' => Service::where('id' , $this->faker->unique()->numberBetween(1,20))->first(),
-            'description' => fake()->sentence,
-            'delivery_time' => fake()->dateTimeBetween(now(), now()->addDays(10)),
-        ];
-    }
+	/**
+	 * Define the model's default state.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function definition(): array
+	{
+		return [
+			'customer_id' => CustomerInfos::where('id', $this->faker->unique()->numberBetween(1, 5))->value('customer_id'),
+			'service_id' => Service::where('id', $this->faker->unique()->numberBetween(1, 20))->first(),
+			'description' => fake()->sentence,
+			'delivery_time' => fake()->dateTimeBetween(now(), now()->addDays(10)),
+		];
+	}
 }

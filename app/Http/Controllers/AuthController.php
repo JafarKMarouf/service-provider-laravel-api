@@ -53,7 +53,9 @@ class AuthController extends Controller
                     $request->email,[$request->role],now()->addWeek()
                 )->plainTextToken;
             $data['user'] = $user;
+			
             $user->notify(new EmailVerificationNotification());
+			
             $response = [
                 'status' => 'success',
                 'data' => $data,
@@ -69,6 +71,7 @@ class AuthController extends Controller
             ], 500);
         }
     }
+	
     public function login(Request $request)
     {
         try {

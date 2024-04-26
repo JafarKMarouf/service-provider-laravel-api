@@ -75,7 +75,8 @@ Route::middleware(['auth:sanctum'])->group(
         });
 
         Route::prefix('customer')->group(function(){
-            Route::prefix('/profile')->group(function(){
+            
+			Route::prefix('/profile')->group(function(){
                 Route::get('/{user_id}',[ProfileController::class,'show']);
                 Route::post('/{user_id}',[ProfileController::class,'update']);
                 Route::delete('/{user_id}',[ProfileController::class,'destroy']);

@@ -20,7 +20,6 @@ class ServiceFactory extends Factory
      */
     public function definition(): array
     {
-        static $id = 0;
         return [
             'expert_id' => ExpertInfos::where('id' , $this->faker->numberBetween(1,3))->value('expert_id'),
             'category_id' => Category::where('id' , $this->faker->numberBetween(1,10))->first(),
