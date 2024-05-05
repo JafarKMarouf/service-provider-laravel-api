@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('mobile')->unique()->nullable();
             $table->string('country')->nullable();
             $table->string('city')->nullable();
-            $table->string('rating')->nullable();
+            $table->integer('rating')->default(0);
             $table->string('description')->nullable();
             $table->string('certificate')->nullable();
             $table->string('working_hours')->default('3 hours');

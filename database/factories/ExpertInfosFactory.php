@@ -34,7 +34,7 @@ class ExpertInfosFactory extends Factory
 			'working_hours' => fake()->time,
 			'description' => fake()->sentence,
 			'certificate' => fake()->sentence,
-
+            'rating' => random_int(0,5),
 			'photo' => URL::to('/') . '/storage/experts/' . time() . '.png',
 		];
 	}
