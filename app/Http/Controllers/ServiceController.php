@@ -27,7 +27,7 @@ class ServiceController extends Controller
 			}
 			$service = Service::query()
 				->with('category:id,title,description')
-				->with('expert:id,name', 'expert.expertInfos:expert_id,mobile,country,city,certificate')
+				->with('expert:id,name', 'expert.expertInfos:expert_id,mobile,country,city,certificate,rating,description,working_hours,photo')
 				->get();
 			return response()->json([
 				'status' => 'success',

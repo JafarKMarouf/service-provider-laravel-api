@@ -25,20 +25,18 @@ class BookingServiceController extends Controller
 				], 200);
 			}
 			if (auth()->user()->role == 'customer') {
-                $count =   BookService::query()
-                            ->where('customer_id',auth()->user()->id)
-                            ->count();
-                if(!$count > 0){
-                    return response()->json([
-                        'status' => 'failed',
-                        'message' => 'Not Found any book service for you',
-                    ],404);
-                }
+				$count = BookService::query()
+					->where('customer_id', auth()->user()->id)
+					->count();
+				if (!$count > 0) {
+					return response()->json([
+						'status' => 'failed',
+						'message' => 'Not Found any book service for you',
+					], 404);
+				}
 				$customer = BookService::query()
 					->where('customer_id', auth()->user()->id)
 					->value('customer_id');
-                    // return $customer;
-                // if()
 				if ($customer != auth()->user()->id) {
 					return response()->json([
 						'status' => 'failed',
@@ -74,8 +72,6 @@ class BookingServiceController extends Controller
 					'status' => 'success',
 					'data' => $book_service
 				], 200);
-				// return $book_service;
-
 			}
 		} catch (\Exception $e) {
 			return response()->json([
@@ -286,5 +282,10 @@ class BookingServiceController extends Controller
 				'message' => $e->getMessage(),
 			], 500);
 		}
+	}
+
+
+	public function showFreelancers()
+	{
 	}
 }

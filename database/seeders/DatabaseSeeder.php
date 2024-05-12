@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\CustomerInfos;
 use App\Models\User;
 use \App\Models\ExpertInfos;
+use App\Models\Payment;
 use App\Models\Service;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -26,5 +27,6 @@ class DatabaseSeeder extends Seeder
 		Category::factory(10)->create();
 		Service::factory(15)->create();
 		BookService::factory(16)->create();
+        Payment::factory(16)->create();
 	}
 }
