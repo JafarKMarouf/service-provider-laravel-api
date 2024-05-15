@@ -43,14 +43,6 @@ class BooKServiceFactory extends Factory
 				now(),
 				now()->addDays(10)
 			),
-			// 'customer_id' => CustomerInfos::where('id', $this->faker->numberBetween(2, 4)
-			// )->value('customer_id'),
-
-			// 'service_id' => Service::where('id',
-			// $this->faker->numberBetween(1, 15)
-			// )->value('id'),
-
-
 		];
 	}
 }

@@ -22,6 +22,7 @@ return new class extends Migration
 				->cascadeOnDelete()
 				->cascadeOnUpdate();
 			$table->string('operation_number')->unique();
+            $table->enum('status',['pandding','success','failed'])->default('pandding');
 			$table->timestamps();
 		});
 	}

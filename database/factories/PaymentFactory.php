@@ -40,6 +40,7 @@ class PaymentFactory extends Factory
             'book_service_id' => $book_service_id,
             'payment_expert_id' => $expert_id,
 			'operation_number' => $this->faker->numerify('6000########') ,
+            'status' => $this->faker->randomElement(['pandding','success','failed'])
 		];
 	}
 }

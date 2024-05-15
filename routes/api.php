@@ -99,6 +99,10 @@ Route::middleware(['auth:sanctum'])->group(
 				Route::get('freelancebyservices', [BookingServiceController::class,'showFreelancers']);
 
 			});
+
+            Route::prefix('payment')->group(function(){
+                Route::get('/',[PaymentController::class,'index']);
+            });
 			// Route::post('service/{id}/book_service');
 
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BookService;
 use App\Models\ExpertInfos;
 use App\Models\Payment;
 use App\Models\User;
@@ -19,9 +20,29 @@ class PaymentController extends Controller
             {
                $expert_id =  Payment::query()
                                 ->where('payment_expert_id',auth()->user()->id)
-                                ->get();
+                                ->with('bookservice:id,customer_id','bookservice.customer:id,name,email')
+                                ->get(['id','payment_expert_id','book_service_id','operation_number','created_at']);
                return $expert_id;
                 // $payments_expert_id = Payment::query()->where('payment_expert_id')->;
+            }
+            else if(auth()->user()->role = 'customer'){
+                $book_service_id = BookService::query()
+                                                ->where('customer_id',auth()->user()->id)
+                                                ->get('id');
+                // return $book_service_id->count();
+                $payments = [];
+                for($i=0;$i<count($book_service_id);$i++ ){
+                    $payments_for_customer = Payment::query()
+                    ->where('book_service_id', $book_service_id[$i]['id'],)
+                    ->with('bookservice')
+                    ->get();
+                    if ($payments_for_customer->count() != 0) {
+						$payments[$book_service_id[$i]['id']] = $payments_for_customer;
+					}
+                }
+                return $payments;
+                // $customer = Payment::query()
+                //     ->where('book_service_id',$book_service_id);
             }
             else{
                 return response()->json([],401);
