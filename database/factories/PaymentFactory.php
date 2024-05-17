@@ -35,7 +35,6 @@ class PaymentFactory extends Factory
         $book_service_id = $payment[0];
 		$expert_id = $payment[1];
 
-
 		return [
             'book_service_id' => $book_service_id,
             'payment_expert_id' => $expert_id,
