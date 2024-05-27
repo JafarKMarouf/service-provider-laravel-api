@@ -21,7 +21,8 @@ return new class extends Migration
 				->constrained('users')
 				->cascadeOnDelete()
 				->cascadeOnUpdate();
-			$table->string('operation_number')->unique();
+            $table->string('amount');
+			$table->string('operation_number');
             $table->enum('status',['pandding','success','failed'])->default('pandding');
 			$table->timestamps();
 		});

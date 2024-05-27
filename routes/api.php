@@ -102,6 +102,7 @@ Route::middleware(['auth:sanctum'])->group(
 
             Route::prefix('payment')->group(function(){
                 Route::get('/',[PaymentController::class,'index']);
+                Route::post('/',[PaymentController::class,'store']);
             });
 		});
 	}

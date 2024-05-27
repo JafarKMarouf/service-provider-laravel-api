@@ -5,114 +5,162 @@ namespace App\Http\Controllers;
 use App\Models\BookService;
 use App\Models\ExpertInfos;
 use App\Models\Payment;
+use App\Models\Service;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
-	/**
-	 * Display a listing of the resource.
-	 */
-	public function index()
-	{
-		try {
-			if (auth()->user()->role == 'expert') {
-				$expert_payments =  Payment::query()
-					->where('payment_expert_id', auth()->user()->id)
-					->with('bookservice:id,customer_id', 'bookservice.customer:id,name,email', 'bookservice.customer.customerInfos:customer_id,mobile,country,city,photo')
-					->get(['id', 'payment_expert_id', 'book_service_id', 'operation_number', 'created_at']);
-				//return count($expert_payments);
-				if (count($expert_payments) > 0) {
-					return response()->json([
-						'status' => 'success',
-						'data' => $expert_payments
-					], 200);
-				}
-				return response()->json([
-					'status' => 'failed',
-					'message' => 'Not Found any payments yet for ' . auth()->user()->name,
-				], 404);
-			} else if (auth()->user()->role = 'customer') {
-				$book_service_id = BookService::query()
-					->where('customer_id', auth()->user()->id)
-					->get('id');
-				$payments = [];
-				for ($i = 0; $i < count($book_service_id); $i++) {
-					$payments_for_customer = Payment::query()
-						->where('book_service_id', $book_service_id[$i]['id'],)
-						->with('bookservice')
-						->get();
-					if ($payments_for_customer->count() != 0) {
-						$payments[$book_service_id[$i]['id']] = $payments_for_customer;
-					}
-				}
 
-				if (count($payments)) {
-					return response()->json([
-						'status' => 'success',
-						'data' => $payments,
-					], 200);
-				}
-				return response()->json([
-					'status' => 'failed',
-					'message' => 'Not Found any payments yet for ' . auth()->user()->name,
-				], 404);
-			} else {
-				return response()->json([], 401);
-			}
-		} catch (\Exception $e) {
-			return response()->json([
-				'status' => 'error',
-				'message' => $e->getMessage(),
-			], 500);
-		}
-	}
+    public function index()
+    {
+        try {
+            if (auth()->user()->role == 'expert') {
+                $expert_payments =  Payment::query()
+                    ->where('payment_expert_id', auth()->user()->id)
+                    ->with(
+                        'bookservice:id,customer_id',
+                        'bookservice.customer:id,name,email',
+                        'bookservice.customer.customerInfos:customer_id,mobile,country,city,photo'
+                    )
+                    ->get(['id', 'payment_expert_id', 'book_service_id', 'operation_number', 'created_at']);
+                if (count($expert_payments) > 0) {
+                    return response()->json([
+                        'status' => 'success',
+                        'count' => count($expert_payments),
+                        'data' => $expert_payments
+                    ], 200);
+                }
+                // return response()->json([]);
 
-	/**
-	 * Show the form for creating a new resource.
-	 */
-	public function create()
-	{
-		//
-	}
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Not Found any payments yet for ' . auth()->user()->name,
+                ], 404);
+            } else if (auth()->user()->role = 'customer') {
+                $book_service_id = BookService::query()
+                    ->where('customer_id', auth()->user()->id)
+                    ->get('id');
+                $payments = [];
+                for ($i = 0; $i < count($book_service_id); $i++) {
+                    $payments_for_customer = Payment::query()
+                        ->where('book_service_id', $book_service_id[$i]['id'],)
+                        ->with('bookservice')
+                        ->get();
+                    if ($payments_for_customer->count() != 0) {
+                        $payments[$book_service_id[$i]['id']] = $payments_for_customer;
+                    }
+                }
+                if (count($payments)) {
+                    return response()->json([
+                        'status' => 'success',
+                        'count' => count($payments),
+                        'data' => $payments,
+                    ], 200);
+                }
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Not Found any payments yet for ' . auth()->user()->name,
+                ], 404);
+            } else {
+                return response()->json([], 401);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
-	/**
-	 * Store a newly created resource in storage.
-	 */
-	public function store(Request $request)
-	{
-		//
-	}
+    public function store(Request $request)
+    {
+        try {
+            if (auth()->user()->role != 'customer') {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Permission denied',
+                ], 401);
+            }
+            $customer_book_service = BookService::query()
+                ->where('id', $request->book_service_id)
+                ->value('customer_id');
 
-	/**
-	 * Display the specified resource.
-	 */
-	public function show(string $id)
-	{
-		//
-	}
+            $service_id = BookService::query()
+                ->where('id', $request->book_service_id)
+                ->value('service_id');
 
-	/**
-	 * Show the form for editing the specified resource.
-	 */
-	public function edit(string $id)
-	{
-		//
-	}
+            $expert_service = Service::query()
+                ->where('id', $service_id)
+                ->value('expert_id');
 
-	/**
-	 * Update the specified resource in storage.
-	 */
-	public function update(Request $request, string $id)
-	{
-		//
-	}
+            if (auth()->user()->id != $customer_book_service) {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Access denied',
+                ], 401);
+            }
+            $validate = Validator::make($request->all(), [
+                'book_service_id' => ['exists:book_services,id', 'required'],
+                'operation_number' => ['string', 'required', 'unique:payments,operation_number', 'max:12'],
+                'amount' => ['string', 'required']
+            ]);
+            if ($validate->fails()) {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => $validate->errors(),
+                ], 403);
+            }
+            $payment =  Payment::create([
+                'book_service_id' => $request->book_service_id,
+                'payment_expert_id' => $expert_service,
+                'amount' => $request->amount,
+                'operation_number' => $request->operation_number,
+            ]);
 
-	/**
-	 * Remove the specified resource from storage.
-	 */
-	public function destroy(string $id)
-	{
-		//
-	}
+            return response()->json([
+                'status' => 'sucess',
+                'data' => $payment,
+                'message' => 'Payment Created Successfully! '
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
+    }
 }

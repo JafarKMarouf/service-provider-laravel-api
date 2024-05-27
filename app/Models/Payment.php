@@ -13,16 +13,17 @@ class Payment extends Model
     protected $fillable = [
         'book_service_id',
         'payment_expert_id',
-        'operation_number'
+        'amount',
+        'operation_number',
     ];
 
-    public function bookservice() : BelongsTo
+    public function bookservice(): BelongsTo
     {
-        return $this->belongsTo(BookService::class,'book_service_id','id');
+        return $this->belongsTo(BookService::class, 'book_service_id', 'id');
     }
 
-    public function expert() : BelongsTo
+    public function expert(): BelongsTo
     {
-        return $this->belongsTo(User::class,'payment_expert_id','id');
+        return $this->belongsTo(User::class, 'payment_expert_id', 'id');
     }
 }
