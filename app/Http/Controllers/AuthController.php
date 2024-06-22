@@ -30,32 +30,34 @@ class AuthController extends Controller
                 ], 403);
             }
 
-            $user =User::create([
+            $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'role' => $request->role,
             ]);
             $expert = new ExpertInfos();
-            if($request->role == 'expert'){
+            if ($request->role == 'expert') {
                 $expert->create([
                     'expert_id' => $user->id,
                 ]);
             }
             $customer = new CustomerInfos();
-            if($request->role == 'customer'){
+            if ($request->role == 'customer') {
                 $customer->create([
                     'customer_id' => $user->id,
                 ]);
             }
 
             $data['token'] = $user->createToken(
-                    $request->email,[$request->role],now()->addWeek()
-                )->plainTextToken;
+                $request->email,
+                [$request->role],
+                now()->addWeek()
+            )->plainTextToken;
             $data['user'] = $user;
-			
+
             $user->notify(new EmailVerificationNotification());
-			
+
             $response = [
                 'status' => 'success',
                 'data' => $data,
@@ -71,7 +73,7 @@ class AuthController extends Controller
             ], 500);
         }
     }
-	
+
     public function login(Request $request)
     {
         try {
@@ -101,8 +103,10 @@ class AuthController extends Controller
                     'message' => 'Invalid credentials'
                 ], 401);
             }
-            $data['token']= $user->createToken(
-                $request->email,[$user->role],now()->addWeek()
+            $data['token'] = $user->createToken(
+                $request->email,
+                [$user->role],
+                now()->addWeek()
             )->plainTextToken;
             $data['user'] = $user;
             $response = [
@@ -111,7 +115,6 @@ class AuthController extends Controller
                 'message' => $user->role . ' is logged in successfully.',
             ];
             return response()->json($response, 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'false',
@@ -131,4 +134,21 @@ class AuthController extends Controller
         ], 200);
     }
 
+    public function getEmailUser($user_id)
+    {
+        if (auth()->user()->id != $user_id) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Persmission Denied'
+            ], 403);
+        }
+        $user = User::find($user_id);
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'user' => $user,
+            ],
+            'message' => 'fetch email of user',
+        ]);
+    }
 }
