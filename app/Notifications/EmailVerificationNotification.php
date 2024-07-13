@@ -37,11 +37,11 @@ class EmailVerificationNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $otp = $this->otp->generate($notifiable->email,'numeric',6,60);
+        $otp = $this->otp->generate($notifiable->email, 'numeric', 6, 1);
         return (new MailMessage)
             ->subject($this->subject)
-            ->markdown('mail.auth.emailverify',[
-                'otp'=> $otp->token,
+            ->markdown('mail.auth.emailverify', [
+                'otp' => $otp->token,
             ]);
     }
 

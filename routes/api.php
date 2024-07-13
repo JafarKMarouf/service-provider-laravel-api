@@ -42,7 +42,7 @@ Route::middleware(['auth:sanctum'])->group(
                 Route::get('/', [CategoryController::class, 'index']);
                 Route::get('/{id}', [CategoryController::class, 'show']);
                 Route::post('/', [CategoryController::class, 'store']);
-                Route::put('/{id}', [CategoryController::class, 'update']);
+                Route::post('/{id}', [CategoryController::class, 'update']);
                 Route::delete('/{id}', [CategoryController::class, 'destroy']);
                 Route::get('/search/{name}', [CategoryController::class, 'search']);
             });
@@ -95,7 +95,10 @@ Route::middleware(['auth:sanctum'])->group(
                 Route::get('/', [BookingServiceController::class, 'index']);
                 Route::get('/{book_id}', [BookingServiceController::class, 'show']);
                 Route::delete('/{book_id}', [BookingServiceController::class, 'destroy']);
-                Route::get('freelancebyservices', [BookingServiceController::class, 'showFreelancers']);
+                Route::get('freelancebyservices/{city}', [BookingServiceController::class, 'showFreelancers']);
+            });
+            Route::prefix('category')->group(function () {
+                Route::get('/', [CategoryController::class, 'index']);
             });
 
             Route::prefix('payment')->group(function () {

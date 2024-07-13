@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\URL;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Category>
@@ -18,7 +19,8 @@ class CategoryFactory extends Factory
     {
         return [
             'title' => fake()->unique()->word,
-            'description' =>fake()->sentence
+            'description' => fake()->sentence,
+            'photo' => URL::to('/') . '/storage/categories/' . time() . '.png',
         ];
     }
 }
