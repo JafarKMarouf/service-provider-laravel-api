@@ -213,4 +213,25 @@ class ServiceController extends Controller
     {
         //
     }
+
+    public function serviceForCategory($category_id)
+    {
+        try {
+            $service = Service::query()
+                ->where('category_id', $category_id)
+                ->with('category:id,title,description,photo')
+                ->with('expert:id,name', 'expert.expertInfos:expert_id,mobile,country,city,certificate,rating,description,working_hours,photo')
+                ->get();
+            return response()->json([
+                'status' => 'success',
+                'count' => count($service),
+                'data' => $service,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

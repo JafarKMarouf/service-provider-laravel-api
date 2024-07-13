@@ -88,7 +88,9 @@ Route::middleware(['auth:sanctum'])->group(
             Route::prefix('service')->group(function () {
                 Route::get('/', [ServiceController::class, 'index']);
                 Route::get('/{id}', [ServiceController::class, 'show']);
+                Route::get('/', [ServiceController::class, 'index']);
                 Route::post('{service_id}/book_service', [BookingServiceController::class, 'store']);
+                Route::get('category/{category_id}', [ServiceController::class, 'serviceForCategory']);
             });
 
             Route::prefix('book_service')->group(function () {
