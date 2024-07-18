@@ -10,18 +10,23 @@ class ExpertInfos extends Model
     use HasFactory;
 
     protected $fillable = [
-        'expert_id',
+        'user_id',
+        'service_id',
         'mobile',
         'city',
         'country',
         'photo',
         'description',
-        'certificate',
         'rating',
-        'working_hours'
+        'working_hours',
+        'price',
     ];
-    public function expert(){
-        return $this->belongsTo(User::class,'expert_id','id');
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
-
+    public function service()
+    {
+        return $this->belongsTo(Service::class, 'service_id');
+    }
 }

@@ -20,13 +20,19 @@ class ServiceFactory extends Factory
      */
     public function definition(): array
     {
+        $category_count =  Category::all()->count();
+        $categorys = [];
+        for ($i = 1; $i < $category_count; $i++) {
+            array_push($categorys, $i);
+        }
+        $category_id = $this->faker->unique->randomElement($categorys);
+
+
         return [
-            'expert_id' => ExpertInfos::where('id' , $this->faker->numberBetween(1,3))->value('expert_id'),
-            'category_id' => Category::where('id' , $this->faker->numberBetween(1,10))->first(),
+            'category_id' => $category_id,
             'service_name' => fake()->unique()->word,
             'service_description' => fake()->sentence,
-            'price' => fake()->randomFloat(2,10,10000),
-			'photo' => URL::to('/') . '/storage/services/' . time() . '.png',
+            'photo' => URL::to('/') . 'storage/services/' . time() . '.png',
         ];
     }
 }

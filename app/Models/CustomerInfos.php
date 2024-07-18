@@ -9,14 +9,20 @@ class CustomerInfos extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'customer_id',
+        'user_id',
         'country',
         'city',
         'mobile',
         'photo',
     ];
 
-    public function customer(){
-        return $this->belongsTo(User::class,'customer_id');
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function bookService()
+    {
+        return $this->hasMany(BookService::class);
     }
 }

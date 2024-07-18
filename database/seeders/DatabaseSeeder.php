@@ -16,17 +16,18 @@ use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-	/**
-	 * Seed the application's database.
-	 */
-	public function run(): void
-	{
-		CustomerInfos::factory(3)->create();
-		User::factory()->create();
-		ExpertInfos::factory(3)->create();
-		Category::factory(10)->create();
-		Service::factory(15)->create();
-		BookService::factory(16)->create();
+    /**
+     * Seed the application's database.
+     */
+    public function run(): void
+    {
+        //     User::factory()->create();
+        //     Category::factory(9)->create();
+        //     Service::factory(6)->create();
+        //     CustomerInfos::factory(3)->create();
+        //     BookService::factory(18)->create();
+
+        ExpertInfos::factory(3)->create();
         Payment::factory(16)->create();
-	}
+    }
 }

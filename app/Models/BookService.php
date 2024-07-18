@@ -17,13 +17,13 @@ class BookService extends Model
         'status',
     ];
 
-    public function customer(){
-        return $this->belongsTo(User::class,);
+    public function customer()
+    {
+        return $this->belongsTo(CustomerInfos::class, 'customer_id');
     }
 
-    public function service(){
-        return $this->belongsTo(Service::class,'service_id','id');
+    public function service()
+    {
+        return $this->belongsTo(Service::class, 'service_id');
     }
-
-    
 }

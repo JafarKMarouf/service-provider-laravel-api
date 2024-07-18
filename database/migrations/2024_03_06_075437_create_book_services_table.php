@@ -14,17 +14,17 @@ return new class extends Migration
         Schema::create('book_services', function (Blueprint $table) {
             $table->id();
             $table->foreignId('customer_id')
-                ->constrained('users')
+                ->constrained('customer_infos')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->foreignId('service_id')
-                  ->constrained('services')
-                  ->cascadeOnDelete()
-                  ->cascadeOnUpdate();
+                ->constrained('services')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->string('description')->nullable();
             $table->dateTime('delivery_time');
-            $table->enum('status',['pending','process','rejected','finished'])->default('pending');
-            $table->unique(['customer_id','service_id']);
+            $table->enum('status', ['pending', 'process', 'rejected', 'finished'])->default('pending');
+            $table->unique(['customer_id', 'service_id']);
             $table->timestamps();
         });
     }

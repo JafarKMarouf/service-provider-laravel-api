@@ -13,16 +13,20 @@ return new class extends Migration
     {
         Schema::create('expert_infos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('expert_id')
+            $table->foreignId('user_id')
                 ->constrained('users')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('service_id')
+                ->constrained('services')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->string('mobile')->unique()->nullable();
             $table->string('country')->nullable();
             $table->string('city')->nullable();
-            $table->integer('rating')->default(0);
+            $table->integer('rating');
             $table->string('description')->nullable();
-            $table->string('certificate')->nullable();
+            $table->double('price');
             $table->string('working_hours')->default('3 hours');
             $table->string('photo')->nullable();
             $table->timestamps();

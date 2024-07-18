@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
@@ -12,7 +12,9 @@ class CategoryController extends Controller
     public function index()
     {
         try {
-            $category = Category::query()->orderBy('created_at', 'desc')->get();
+            $category = Category::query()
+                ->orderBy('created_at', 'desc')
+                ->get(['id', 'title', 'description', 'photo']);
 
             return response()->json([
                 'status' => 'success',
@@ -71,16 +73,19 @@ class CategoryController extends Controller
         }
     }
 
-    public function show(Category $id)
+    public function show($id)
     {
         try {
-            $category = Category::find($id);
-            if (!$category) {
+            $category_id = Category::where('id', $id)->count();
+            if (!$category_id) {
                 return response()->json([
                     'status' => 'failed',
                     'message' => 'Category not found'
                 ], 403);
             }
+            $category = Category::query()
+                ->where('id', $id)
+                ->get(['id', 'title', 'description', 'photo']);
 
             return response()->json([
                 'status' => 'success',
@@ -121,7 +126,6 @@ class CategoryController extends Controller
                 if ($request->hasFile('photo')) {
                     $ext = $request->file('photo')->getClientOriginalExtension();
                     $filename = $this->saveImage($request->photo, $ext, 'categories');
-                    // $category->photo = $filename;
                 }
 
                 $category->update([
@@ -148,7 +152,6 @@ class CategoryController extends Controller
             ], 500);
         }
     }
-
     public function destroy(string $id)
     {
         try {
@@ -164,7 +167,6 @@ class CategoryController extends Controller
 
                 return response()->json([
                     'status' => 'success',
-                    'data' => [],
                     'message' => 'Category deleted Succfully!',
                 ]);
             } else {
@@ -184,20 +186,20 @@ class CategoryController extends Controller
     public function search(String $name)
     {
         try {
-
-            $category = Category::where('title', $name)
-                ->orWhere('description', $name)
+            $category = Category::where('title', 'LIKE', '%' . $name . '%')
+                ->orWhere('description', 'LIKE', '%' . $name . '%')
                 ->get();
-            if (empty($category)) {
-                return response()->json([
-                    'status' => 'failed',
-                    'message' => 'Category not found',
-                ], 404);
-            } else {
+            return $category;
+            if ($category->count() > 0) {
                 return response()->json([
                     'status' => 'success',
                     'data' => $category,
                 ], 200);
+            } else {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Category not found',
+                ], 404);
             }
         } catch (\Exception $e) {
             return response()->json([
