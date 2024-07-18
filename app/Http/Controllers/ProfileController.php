@@ -11,18 +11,13 @@ use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
-    public function show(string $user_id)
+    public function show()
     {
         try {
-            if (auth()->user()->id != $user_id) {
-                return response()->json([
-                    'status' => 'failed',
-                    'message' => 'Persmission Denied'
-                ], 403);
-            }
             if (auth()->user()->role == 'expert') {
                 $expert = ExpertInfos::query()->select(
-                    'expert_id',
+                    'user_id',
+                    'service_id',
                     'mobile',
                     'city',
                     'country',
@@ -30,29 +25,29 @@ class ProfileController extends Controller
                     'description',
                     'working_hours',
                     'photo',
-                    'certificate',
+                    'price',
                 )
-                    ->where('expert_id', $user_id)
-                    ->with('expert:id,name,email,role')
+                    ->where('user_id', auth()->user()->id)
+                    ->with('user:id,name,email,role')
                     ->get();
                 return response()->json([
                     'status' => 'success',
-                    'expert_infos' => $expert,
+                    'data' => $expert,
                 ], 200);
             } else if (auth()->user()->role == 'customer') {
                 $customer = CustomerInfos::query()->select(
-                    'customer_id',
+                    'user_id',
                     'mobile',
                     'city',
                     'country',
                     'photo',
                 )
-                    ->where('customer_id', $user_id)
-                    ->with('customer:id,name,email,role')
+                    ->where('user_id', auth()->user()->id)
+                    ->with('user:id,name,email,role')
                     ->get();
                 return response()->json([
                     'status' => 'success',
-                    'customer_infos' => $customer,
+                    'data' => $customer,
                 ], 200);
             }
         } catch (\Exception $e) {
@@ -63,30 +58,24 @@ class ProfileController extends Controller
         }
     }
 
-    public function update(Request $request, $user_id)
+    public function update(Request $request)
     {
         try {
             $id = auth()->user()->id;
-            if ($user_id != $id) {
-                return response()->json([
-                    'status' => 'failed',
-                    'message' => 'Permission denied'
-                ], 403);
-            }
 
             $validate = Validator::make($request->all(), [
                 'mobile' => 'digits:10',
-                'expert_id' => 'exists:expert_infos,expert_id',
-                'customer_id' => 'exists:customer_infos,customer_id',
+                'user_id' => 'exists:users,id',
+                'service_id' => 'exists:services,id',
                 'name' => 'string|max:250',
                 'email' => 'email|unique:users,email',
                 'password' => 'string|min:8',
                 'country' => 'string',
                 'city' => 'string',
                 'description' => 'string|min:25|max:60',
-                'certificate' => 'string',
                 'working_hours' => 'string',
-                'photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+                'photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'price' => 'string'
             ]);
             if ($validate->fails()) {
                 return response()->json([
@@ -96,8 +85,8 @@ class ProfileController extends Controller
             }
 
 
-            $role = User::find($id)->role;
-            $user = User::find($user_id);
+            $role = auth()->user()->role;
+            $user = User::find($id);
 
             if ($request->name != null) {
                 $user->name = $request->name;
@@ -109,7 +98,7 @@ class ProfileController extends Controller
                 $user->email = $request->email;
             }
             if ($role == 'expert') {
-                $expert_id = ExpertInfos::where('expert_id', $user_id)->value('id');
+                $expert_id = ExpertInfos::where('user_id', $id)->value('id');
                 $expert = ExpertInfos::find($expert_id);
                 if ($request->photo != null) {
                     $ext = $request->file('photo')->getClientOriginalExtension();
@@ -129,26 +118,30 @@ class ProfileController extends Controller
                     $expert->city = $request->city;
                 }
 
-                if ($request->certificate != null) {
-                    $expert->certificate = $request->certificate;
-                }
-
                 if ($request->working_hours != null) {
                     $expert->working_hours = $request->working_hours;
                 }
+                if ($request->price != null) {
+                    $expert->price = $request->price;
+                }
+                if ($request->service_id != null) {
+                    $expert->service_id = $request->service_id;
+                }
+
                 $user->save();
                 $expert->save();
-
+                $expert = ExpertInfos::query()
+                    ->select('id', 'user_id', 'service_id', 'mobile', 'country', 'city', 'description', 'rating', 'price', 'working_hours', 'photo')
+                    ->where('user_id', $id)
+                    ->with('user:id,name,email,role')
+                    ->get();
                 return response()->json([
                     'status' => 'success',
-                    'data' => [
-                        'user' => $user,
-                        'expert_info' => $expert,
-                    ],
+                    'data' =>  $expert,
                     'message' => 'Expert Updated Successfully'
                 ], 200);
             } else if ($role == 'customer') {
-                $customer_id = CustomerInfos::where('customer_id', $user_id)->value('id');
+                $customer_id = CustomerInfos::where('user_id', $id)->value('id');
                 $customer = CustomerInfos::find($customer_id);
 
                 if ($request->photo != null) {
@@ -178,12 +171,12 @@ class ProfileController extends Controller
                     'country',
                     'photo',
                 )
-                    ->where('customer_id', $user_id)
-                    ->with('customer:id,name,email,role')
+                    ->where('user_id', $id)
+                    ->with('user:id,name,email,role')
                     ->get();
                 return response()->json([
                     'status' => 'success',
-                    'customer_infos' => $customer,
+                    'data' => $customer,
                     'message' => 'Customer Updated Successfully'
                 ], 200);
             }
@@ -194,20 +187,15 @@ class ProfileController extends Controller
             ], 500);
         }
     }
-    public function destroy(string $user_id)
+    public function destroy()
     {
         try {
-            if (auth()->user()->id != $user_id) {
-                return response()->json([
-                    'status' => 'failed',
-                    'message' => 'Persmission Denied'
-                ], 403);
-            }
-            $user = User::find($user_id);
+            $role =  auth()->user()->role;
+            $user = User::find(auth()->user()->id);
             $user->delete();
             return response()->json([
                 'status' => 'success',
-                'message' => 'User deleted Successfully'
+                'message' => $role . ' deleted Successfully'
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

@@ -20,10 +20,13 @@ class PaymentController extends Controller
                 $expert_payments =  Payment::query()
                     ->where('payment_expert_id', auth()->user()->id)
                     ->with(
-                        'bookservice:id,customer_id',
-                        'bookservice.customer:id,name,email',
-                        'bookservice.customer.customerInfos:customer_id,mobile,country,city,photo'
+                        'bookservice:id,customer_id,service_id',
+                        'bookservice.service:id,service_name',
+                        'bookservice.service.expert:id,service_id,mobile,country,city,price',
+                        'bookservice.customer:id,user_id,mobile,country,city,photo',
+                        'bookservice.customer.user:id,name,email',
                     )
+                    ->orderBy('created_at', 'desc')
                     ->get(['id', 'payment_expert_id', 'book_service_id', 'operation_number', 'created_at']);
                 if (count($expert_payments) > 0) {
                     return response()->json([
@@ -32,7 +35,6 @@ class PaymentController extends Controller
                         'data' => $expert_payments
                     ], 200);
                 }
-                // return response()->json([]);
 
                 return response()->json([
                     'status' => 'failed',

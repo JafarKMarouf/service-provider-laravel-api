@@ -19,11 +19,11 @@ class Payment extends Model
 
     public function bookservice(): BelongsTo
     {
-        return $this->belongsTo(BookService::class, 'book_service_id', 'id');
+        return $this->belongsTo(BookService::class, 'book_service_id');
     }
 
     public function expert(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'payment_expert_id', 'id');
+        return $this->belongsTo(User::class, 'payment_expert_id');
     }
 }

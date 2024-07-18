@@ -12,27 +12,26 @@ use Illuminate\Support\Facades\URL;
  */
 class CustomerInfosFactory extends Factory
 {
-	/**
-	 * Define the model's default state.
-	 *
-	 * @return array<string, mixed>
-	 */
-	public function definition(): array
-	{
-		$faker = fake()->unique()->userName();
-		static $counter = 0;
-		static $photo = 0;
-		return [
-			'customer_id' => User::factory()->create([
-				'name' => $faker,
-				'email' => 'customer' . $counter++ . '@gmail.com',
-				'password' => Hash::make('123456789'),
-				'role' => 'customer'
-			])->getAttribute('id'),
-			'mobile' => fake()->unique()->phoneNumber,
-			'city' => fake()->city,
-			'country' => fake()->country,
-			'photo' => URL::to('/') . '/storage/customers/' . time() . '.png',
-		];
-	}
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        $faker = fake()->unique()->userName();
+        static $counter = 0;
+        return [
+            'user_id' => User::factory()->create([
+                'name' => $faker,
+                'email' => 'customer' . $counter++ . '@gmail.com',
+                'password' => Hash::make('123456789'),
+                'role' => 'customer'
+            ])->getAttribute('id'),
+            'mobile' => fake()->unique()->phoneNumber,
+            'city' => fake()->city,
+            'country' => fake()->country,
+            'photo' => URL::to('/') . '/storage/customers/' . time() . '.png',
+        ];
+    }
 }
