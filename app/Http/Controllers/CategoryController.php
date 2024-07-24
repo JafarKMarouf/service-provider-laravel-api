@@ -188,11 +188,12 @@ class CategoryController extends Controller
         try {
             $category = Category::where('title', 'LIKE', '%' . $name . '%')
                 ->orWhere('description', 'LIKE', '%' . $name . '%')
-                ->get();
-            return $category;
+                ->get(['title', 'description', 'photo']);
+
             if ($category->count() > 0) {
                 return response()->json([
                     'status' => 'success',
+                    'count' => count($category),
                     'data' => $category,
                 ], 200);
             } else {

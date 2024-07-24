@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\BookService;
+use App\Models\CustomerInfos;
 use App\Models\ExpertInfos;
 use App\Models\Service;
 use App\Models\User;
@@ -19,10 +20,11 @@ class BookingServiceController extends Controller
                 $book_service = BookService::query()
                     ->with('customer:id,mobile,country,city,photo')
                     ->with(
-                        'service:id,service_name,photo',
-                        'service.expert:id,service_id,mobile,country,city,photo,rating,price,working_hours'
+                        'expert:id,user_id,mobile,city,country,rating,price,photo',
+                        'expert.user:id,name,email,role'
                     )
-                    ->get(['id', 'customer_id', 'service_id', 'description', 'delivery_time', 'status']);
+                    ->with('service:id,service_name,photo')
+                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_time', 'status']);
                 return response()->json([
                     'status' => 'success',
                     'count' => count($book_service),
@@ -30,10 +32,11 @@ class BookingServiceController extends Controller
                 ], 200);
             }
 
-            // there is problem you must solve it
             if (auth()->user()->role == 'customer') {
+                $user_id = auth()->user()->id;
+                $customer_id = CustomerInfos::where('user_id', $user_id)->value('id');
                 $count = BookService::query()
-                    ->where('customer_id', auth()->user()->id)
+                    ->where('customer_id', $customer_id)
                     ->count();
                 if (!$count > 0) {
                     return response()->json([
@@ -41,19 +44,15 @@ class BookingServiceController extends Controller
                         'message' => 'Not Found any book service for you',
                     ], 404);
                 }
-                $customer = BookService::query()
-                    ->where('customer_id', auth()->user()->id)
-                    ->value('customer_id');
-                if ($customer != auth()->user()->id) {
-                    return response()->json([
-                        'status' => 'failed',
-                        'message' => 'Permission denied',
-                    ], 403);
-                }
+
                 $book_service = BookService::query()
-                    ->where('customer_id', $customer)
-                    ->with('service:id,service_name,photo,price,expert_id', 'service.expert:id,name,email,role', 'service.expert.expertInfos')
-                    ->get();
+                    ->where('customer_id', $customer_id)
+                    ->with(
+                        'expert:id,user_id,mobile,city,country,rating,price,photo',
+                        'expert.user:id,name,email,role'
+                    )
+                    ->with('service:id,service_name,photo',)
+                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_time', 'status']);
                 return response()->json([
                     'status' => 'success',
                     'count ' => count($book_service),
@@ -99,7 +98,8 @@ class BookingServiceController extends Controller
                     ], 403);
                 }
                 $validate = Validator::make($request->all(), [
-                    'customer_id' => 'exists:users,id',
+                    'customer_id' => 'exists:customer_infos,id',
+                    'expert_id' => 'required|exists:expert_infos,id',
                     'service_id' => 'exists:services,id',
                     'description' => 'string|min:20',
                     'delivery_time' => 'string'
@@ -110,9 +110,12 @@ class BookingServiceController extends Controller
                         'message' => $validate->errors(),
                     ], 403);
                 }
+                $user_id = auth()->user()->id;
+                $customer_id = CustomerInfos::where('user_id', $user_id)->value('id');
 
                 $book = BookService::create([
-                    'customer_id' => auth()->user()->id,
+                    'customer_id' => $customer_id,
+                    'expert_id' => $request->expert_id,
                     'service_id' => $service_id,
                     'description' => $request->description,
                     'delivery_time' => $request->delivery_time,
@@ -147,7 +150,8 @@ class BookingServiceController extends Controller
                 ]);
             }
             if (auth()->user()->role == 'customer') {
-                $customer = BookService::query()->find($book_id)->customer->id;
+                $customer = BookService::query()->find($book_id)
+                    ->customer->id;
                 if ($customer != auth()->user()->id) {
                     return response()->json([
                         'status' => 'failed',
@@ -156,9 +160,12 @@ class BookingServiceController extends Controller
                 }
                 $book_service = BookService::query()
                     ->where('id', $book_id)
-                    ->with('service:id,service_name,photo,price,expert_id', 'service.expert:id,name,email,role', 'service.expert.expertInfos')
-                    // ->with('customer:id,name,role')
-                    ->get();
+                    ->with(
+                        'expert:id,user_id,mobile,city,country,rating,price,photo',
+                        'expert.user:id,name,email,role'
+                    )
+                    ->with('service:id,service_name,photo')
+                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_time', 'status']);
                 return response()->json([
                     'status' => 'success',
                     'data' => $book_service
@@ -180,7 +187,7 @@ class BookingServiceController extends Controller
                     ->where('id', $book_id)
                     ->with('customer:id,user_id,mobile,country,city,photo', 'customer.user:id,name,email')
                     ->with('service:id,service_name,photo')
-                    ->get(['id', 'customer_id', 'service_id', 'description', 'delivery_time', 'status']);
+                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_time', 'status']);
 
                 return response()->json([
                     'status' => 'success',
@@ -191,8 +198,11 @@ class BookingServiceController extends Controller
                     ->where('id', $book_id)
                     ->with('customer:id,mobile,country,city,photo')
                     ->with(
+                        'expert:id,user_id,mobile,city,country,rating,price,photo',
+                        'expert.user:id,name,email,role'
+                    )
+                    ->with(
                         'service:id,service_name,photo',
-                        'service.expert:id,service_id,mobile,country,city,photo,rating,price,working_hours'
                     )
                     ->get(['id', 'customer_id', 'service_id', 'description', 'delivery_time', 'status']);
 
@@ -297,9 +307,12 @@ class BookingServiceController extends Controller
                 ], 200);
             }
             if (auth()->user()->role == 'customer') {
+                $user_id = auth()->user()->id;
+                $customer_id = CustomerInfos::where('user_id', $user_id)->value('id');
+
                 $book_service = BookService::query()
                     ->where('id', $book_id)
-                    ->where('customer_id', auth()->user()->id)
+                    ->where('customer_id', $customer_id)
                     ->delete();
                 if (!$book_service) {
                     return response()->json([

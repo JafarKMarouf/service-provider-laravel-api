@@ -21,11 +21,6 @@ class ExpertInfosFactory extends Factory
     public function definition()
     {
         $service_count =  Service::all()->count();
-        $services = [];
-        for ($i = 1; $i < $service_count; $i++) {
-            array_push($services, $i);
-        }
-        $service_id = $this->faker->unique->randomElement($services);
         static $counter = 0;
         return [
             'user_id' => User::factory()->create([
@@ -34,7 +29,7 @@ class ExpertInfosFactory extends Factory
                 'password' => Hash::make('123456789'),
                 'role' => 'expert'
             ])->getAttribute('id'),
-            'service_id' => $service_id,
+            'service_id' => fake()->numberBetween(1, $service_count),
             'mobile' => fake()->unique()->phoneNumber,
             'city' => fake()->city,
             'country' => fake()->country,

@@ -113,6 +113,7 @@ Route::middleware(['auth:sanctum'])->group(
                 Route::get('/{id}', [ServiceController::class, 'show']);
                 Route::post('{service_id}/book_service', [BookingServiceController::class, 'store']);
                 Route::get('category/{category_id}', [ServiceController::class, 'serviceByCategory']);
+                Route::get('{service_id}/experts', [ServiceController::class, 'fetchExpertsForService']);
             });
 
             Route::prefix('book_service')->group(function () {
@@ -124,6 +125,8 @@ Route::middleware(['auth:sanctum'])->group(
 
             Route::prefix('category')->group(function () {
                 Route::get('/', [CategoryController::class, 'index']);
+                Route::get('/{id}', [CategoryController::class, 'show']);
+                Route::get('/search/{filtter}', [CategoryController::class, 'search']);
             });
 
             Route::prefix('payment')->group(function () {

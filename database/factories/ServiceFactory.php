@@ -21,15 +21,9 @@ class ServiceFactory extends Factory
     public function definition(): array
     {
         $category_count =  Category::all()->count();
-        $categorys = [];
-        for ($i = 1; $i < $category_count; $i++) {
-            array_push($categorys, $i);
-        }
-        $category_id = $this->faker->unique->randomElement($categorys);
-
 
         return [
-            'category_id' => $category_id,
+            'category_id' => fake()->numberBetween(1, $category_count),
             'service_name' => fake()->unique()->word,
             'service_description' => fake()->sentence,
             'photo' => URL::to('/') . 'storage/services/' . time() . '.png',
