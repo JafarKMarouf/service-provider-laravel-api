@@ -40,13 +40,13 @@ class AuthUserController extends Controller
             $expert = new ExpertInfos();
             if ($request->role == 'expert') {
                 $expert->create([
-                    'expert_id' => $user->id,
+                    'user_id' => $user->id,
                 ]);
             }
             $customer = new CustomerInfos();
             if ($request->role == 'customer') {
                 $customer->create([
-                    'customer_id' => $user->id,
+                    'user_id' => $user->id,
                 ]);
             }
 

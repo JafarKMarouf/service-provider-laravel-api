@@ -62,7 +62,6 @@ class ProfileController extends Controller
 
     public function update(Request $request)
     {
-        // return $request->all();
         try {
             $id = auth()->user()->id;
 
@@ -77,7 +76,7 @@ class ProfileController extends Controller
                 'city' => 'string',
                 'description' => 'string|min:25|max:60',
                 'working_hours' => 'string',
-                'photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'photo' => 'image|mimes:jpeg,png,jpg,gif,svg',
                 'price' => 'string'
             ]);
             if ($validate->fails()) {
@@ -100,8 +99,8 @@ class ProfileController extends Controller
                 $expert_id = ExpertInfos::where('user_id', $id)->value('id');
                 $expert = ExpertInfos::find($expert_id);
                 if ($request->photo != null) {
-                    $ext = $request->file('photo')->getClientOriginalExtension();
-                    $filename = $this->saveImage($request->photo, $ext, 'experts');
+                    $image = $request->file('photo');
+                    $filename = $this->uploadToImgBB($image);
                 }
                 $expert->update([
                     'mobile' => $request->mobile ?? $expert->mobile,
@@ -129,8 +128,8 @@ class ProfileController extends Controller
                 $customer = CustomerInfos::find($customer_id);
                 $filename = '';
                 if ($request->photo != null) {
-                    $ext = $request->file('photo')->getClientOriginalExtension();
-                    $filename = $this->saveImage($request->photo, $ext, 'customers');
+                    $image = $request->file('photo');
+                    $filename = $this->uploadToImgBB($image);
                 }
 
                 $customer->update([

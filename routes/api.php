@@ -9,6 +9,7 @@ use App\Http\Controllers\BookingServiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\uploadImageController;
 use Illuminate\Support\Facades\Route;
 
 /*

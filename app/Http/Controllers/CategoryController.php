@@ -46,8 +46,8 @@ class CategoryController extends Controller
                     ], 403);
                 }
 
-                $ext = $request->file('photo')->getClientOriginalExtension();
-                $filename = $this->saveImage($request->photo, $ext, 'categories');
+                $image = $request->file('photo');
+                $filename = $this->uploadToImgBB($image);
 
                 $category = Category::create([
                     'title' => $request->title,
@@ -124,8 +124,8 @@ class CategoryController extends Controller
                 }
                 $filename = '';
                 if ($request->hasFile('photo')) {
-                    $ext = $request->file('photo')->getClientOriginalExtension();
-                    $filename = $this->saveImage($request->photo, $ext, 'categories');
+                    $image = $request->file('photo');
+                    $filename = $this->uploadToImgBB($image);
                 }
 
                 $category->update([

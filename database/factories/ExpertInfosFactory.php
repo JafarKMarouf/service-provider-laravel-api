@@ -33,7 +33,7 @@ class ExpertInfosFactory extends Factory
             'mobile' => fake()->unique()->phoneNumber,
             'city' => fake()->city,
             'country' => fake()->country,
-            'working_hours' => fake()->time,
+            'working_hours' => fake()->numberBetween(1, 24),
             'description' => fake()->sentence,
             'rating' => random_int(0, 5),
             'price' => fake()->randomFloat(2, 10, 1000),

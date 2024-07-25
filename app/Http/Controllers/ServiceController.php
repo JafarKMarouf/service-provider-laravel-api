@@ -3,10 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\ExpertInfos;
 use App\Models\Service;
-use App\Models\User;
-use Google\Service\CloudFunctions\Retry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -123,8 +120,8 @@ class ServiceController extends Controller
             }
 
             if ($request->hasFile('photo')) {
-                $ext = $request->file('photo')->getClientOriginalExtension();
-                $filename = $this->saveImage($request->photo, $ext, 'services');
+                $image = $request->file('photo');
+                $filename = $this->uploadToImgBB($image);
                 $service->photo = $filename;
             }
 

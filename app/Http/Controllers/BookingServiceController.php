@@ -7,7 +7,6 @@ use App\Models\BookService;
 use App\Models\CustomerInfos;
 use App\Models\ExpertInfos;
 use App\Models\Service;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -20,11 +19,11 @@ class BookingServiceController extends Controller
                 $book_service = BookService::query()
                     ->with('customer:id,mobile,country,city,photo')
                     ->with(
-                        'expert:id,user_id,mobile,city,country,rating,price,photo',
+                        'expert:id,user_id,mobile,city,country,rating,price,photo,description,working_hours',
                         'expert.user:id,name,email,role'
                     )
                     ->with('service:id,service_name,photo')
-                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_time', 'status']);
+                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_time', 'status', 'created_at']);
                 return response()->json([
                     'status' => 'success',
                     'count' => count($book_service),
@@ -48,11 +47,11 @@ class BookingServiceController extends Controller
                 $book_service = BookService::query()
                     ->where('customer_id', $customer_id)
                     ->with(
-                        'expert:id,user_id,mobile,city,country,rating,price,photo',
+                        'expert:id,user_id,mobile,city,country,rating,price,photo,description,working_hours',
                         'expert.user:id,name,email,role'
                     )
                     ->with('service:id,service_name,photo',)
-                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_time', 'status']);
+                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_time', 'status', 'created_at']);
                 return response()->json([
                     'status' => 'success',
                     'count ' => count($book_service),
@@ -72,7 +71,7 @@ class BookingServiceController extends Controller
                     ->where('service_id', $service_id)
                     ->with('customer:id,user_id,mobile,country,city,photo', 'customer.user:id,name,email')
                     ->with('service:id,service_name,photo')
-                    ->get(['id', 'customer_id', 'service_id', 'description', 'delivery_time', 'status']);
+                    ->get(['id', 'customer_id', 'service_id', 'description', 'delivery_time', 'status', 'created_at']);
 
                 return response()->json([
                     'status' => 'success',
@@ -161,11 +160,11 @@ class BookingServiceController extends Controller
                 $book_service = BookService::query()
                     ->where('id', $book_id)
                     ->with(
-                        'expert:id,user_id,mobile,city,country,rating,price,photo',
+                        'expert:id,user_id,mobile,city,country,rating,price,photo,description,working_hours',
                         'expert.user:id,name,email,role'
                     )
                     ->with('service:id,service_name,photo')
-                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_time', 'status']);
+                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_time', 'status', 'created_at']);
                 return response()->json([
                     'status' => 'success',
                     'data' => $book_service
@@ -187,7 +186,7 @@ class BookingServiceController extends Controller
                     ->where('id', $book_id)
                     ->with('customer:id,user_id,mobile,country,city,photo', 'customer.user:id,name,email')
                     ->with('service:id,service_name,photo')
-                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_time', 'status']);
+                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_time', 'status', 'created_at']);
 
                 return response()->json([
                     'status' => 'success',
@@ -198,13 +197,13 @@ class BookingServiceController extends Controller
                     ->where('id', $book_id)
                     ->with('customer:id,mobile,country,city,photo')
                     ->with(
-                        'expert:id,user_id,mobile,city,country,rating,price,photo',
+                        'expert:id,user_id,mobile,city,country,rating,price,photo,description,working_hours',
                         'expert.user:id,name,email,role'
                     )
                     ->with(
-                        'service:id,service_name,photo',
+                        'service:id,service_name,photo'
                     )
-                    ->get(['id', 'customer_id', 'service_id', 'description', 'delivery_time', 'status']);
+                    ->get(['id', 'customer_id', 'service_id', 'description', 'delivery_time', 'status', 'created_at']);
 
 
                 return response()->json([
