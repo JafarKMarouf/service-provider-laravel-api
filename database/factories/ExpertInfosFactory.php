@@ -22,6 +22,7 @@ class ExpertInfosFactory extends Factory
     {
         $service_count =  Service::all()->count();
         static $counter = 0;
+
         return [
             'user_id' => User::factory()->create([
                 'name' => fake()->unique()->userName(),
@@ -37,7 +38,8 @@ class ExpertInfosFactory extends Factory
             'description' => fake()->sentence,
             'rating' => random_int(0, 5),
             'price' => fake()->randomFloat(2, 10, 1000),
-            'photo' => URL::to('/') . '/storage/experts/' . time() . '.png',
+            'photo' => 'https://i.ibb.co/Fnw45yT/ellipse-121.jpg',
+            // 'photo' => URL::to('/') . '/storage/experts/' . time() . '.png',
         ];
     }
 }

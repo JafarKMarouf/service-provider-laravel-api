@@ -46,10 +46,8 @@ class BooKServiceFactory extends Factory
             'expert_id' => $expert[$count],
             'service_id' => ExpertInfos::where('id', $expert[$count])->value('service_id'),
             'description' => fake()->sentence,
-            'delivery_time' => fake()->dateTimeBetween(
-                now(),
-                now()->addDays(10)
-            ),
+            'delivery_date' => fake()->date('Y/m/d', 'now'),
+            'delivery_time' => fake()->time(),
             'id' => ++$count,
         ];
     }

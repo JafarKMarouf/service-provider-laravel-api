@@ -37,6 +37,7 @@ class ProfileController extends Controller
                 ], 200);
             } else if (auth()->user()->role == 'customer') {
                 $customer = CustomerInfos::query()->select(
+                    'id',
                     'user_id',
                     'mobile',
                     'city',

@@ -47,6 +47,7 @@ class AuthUserController extends Controller
             if ($request->role == 'customer') {
                 $customer->create([
                     'user_id' => $user->id,
+                    'photo' => 'https://i.ibb.co/BTdNvBw/ellipse-12.jpg',
                 ]);
             }
 

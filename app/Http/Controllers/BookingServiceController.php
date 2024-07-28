@@ -23,7 +23,7 @@ class BookingServiceController extends Controller
                         'expert.user:id,name,email,role'
                     )
                     ->with('service:id,service_name,photo')
-                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_time', 'status', 'created_at']);
+                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_date', 'delivery_time', 'status', 'created_at']);
                 return response()->json([
                     'status' => 'success',
                     'count' => count($book_service),
@@ -51,7 +51,7 @@ class BookingServiceController extends Controller
                         'expert.user:id,name,email,role'
                     )
                     ->with('service:id,service_name,photo',)
-                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_time', 'status', 'created_at']);
+                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_date', 'delivery_time', 'status', 'created_at']);
                 return response()->json([
                     'status' => 'success',
                     'count ' => count($book_service),
@@ -71,7 +71,7 @@ class BookingServiceController extends Controller
                     ->where('service_id', $service_id)
                     ->with('customer:id,user_id,mobile,country,city,photo', 'customer.user:id,name,email')
                     ->with('service:id,service_name,photo')
-                    ->get(['id', 'customer_id', 'service_id', 'description', 'delivery_time', 'status', 'created_at']);
+                    ->get(['id', 'customer_id', 'service_id', 'description', 'delivery_date', 'delivery_time', 'status', 'created_at']);
 
                 return response()->json([
                     'status' => 'success',
@@ -101,7 +101,8 @@ class BookingServiceController extends Controller
                     'expert_id' => 'required|exists:expert_infos,id',
                     'service_id' => 'exists:services,id',
                     'description' => 'string|min:20',
-                    'delivery_time' => 'string'
+                    'delivery_time' => 'string',
+                    'delivery_date' => 'string'
                 ]);
                 if ($validate->fails()) {
                     return response()->json([
@@ -118,6 +119,7 @@ class BookingServiceController extends Controller
                     'service_id' => $service_id,
                     'description' => $request->description,
                     'delivery_time' => $request->delivery_time,
+                    'delivery_date' => $request->delivery_date,
                 ]);
 
                 return response()->json([
@@ -164,7 +166,7 @@ class BookingServiceController extends Controller
                         'expert.user:id,name,email,role'
                     )
                     ->with('service:id,service_name,photo')
-                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_time', 'status', 'created_at']);
+                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_date', 'delivery_time', 'status', 'created_at']);
                 return response()->json([
                     'status' => 'success',
                     'data' => $book_service
@@ -186,7 +188,7 @@ class BookingServiceController extends Controller
                     ->where('id', $book_id)
                     ->with('customer:id,user_id,mobile,country,city,photo', 'customer.user:id,name,email')
                     ->with('service:id,service_name,photo')
-                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_time', 'status', 'created_at']);
+                    ->get(['id', 'customer_id', 'expert_id', 'service_id', 'description', 'delivery_date', 'delivery_time', 'status', 'created_at']);
 
                 return response()->json([
                     'status' => 'success',
@@ -203,7 +205,7 @@ class BookingServiceController extends Controller
                     ->with(
                         'service:id,service_name,photo'
                     )
-                    ->get(['id', 'customer_id', 'service_id', 'description', 'delivery_time', 'status', 'created_at']);
+                    ->get(['id', 'customer_id', 'service_id', 'description', 'delivery_date', 'delivery_time', 'status', 'created_at']);
 
 
                 return response()->json([
@@ -257,6 +259,7 @@ class BookingServiceController extends Controller
                 $book_service->update([
                     'status' => $request->status,
                     'delivery_time' => $request->delivery_time ?? $book_service->delivery_time,
+                    'delivery_date' => $request->delivery_date ?? $book_service->delivery_date,
                 ]);
                 return response()->json([
                     'status' => 'success',

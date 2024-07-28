@@ -15,6 +15,7 @@ class BookService extends Model
         'service_id',
         'description',
         'delivery_time',
+        'delivery_date',
         'status',
     ];
 

@@ -14,7 +14,7 @@ class ServiceController extends Controller
         try {
             $service = Service::query()
                 ->with('category:id,title,description,photo')
-                ->with('expert:user_id,service_id,mobile,country,city,rating,price,photo,working_hours', 'expert.user:id,name,role')
+                ->with('expert:user_id,service_id,mobile,country,city,rating,description,price,photo,working_hours', 'expert.user:id,name,role')
                 ->get(['id', 'category_id', 'service_name', 'service_description', 'photo']);
             return response()->json([
                 'status' => 'success',
@@ -189,7 +189,7 @@ class ServiceController extends Controller
             $service = Service::query()
                 ->where('category_id', $category_id)
                 ->with('category:id,title,description,photo')
-                ->with('expert:user_id,service_id,mobile,country,city,rating,price,photo,working_hours', 'expert.user:id,name,role')
+                ->with('expert:id,user_id,service_id,mobile,country,city,rating,description,price,photo,working_hours', 'expert.user:id,name,role')
                 ->get(['id', 'category_id', 'service_name', 'service_description', 'photo']);
             return response()->json([
                 'status' => 'success',
