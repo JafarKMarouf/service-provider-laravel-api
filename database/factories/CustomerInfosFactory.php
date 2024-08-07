@@ -32,7 +32,7 @@ class CustomerInfosFactory extends Factory
             'city' => fake()->city,
             'country' => fake()->country,
             'photo' => 'https://i.ibb.co/BTdNvBw/ellipse-12.jpg'
-            // 'photo' => URL::to('/') . '/storage/customers/' . time() . '.png',
+
         ];
     }
 }

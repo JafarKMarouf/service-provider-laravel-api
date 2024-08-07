@@ -25,12 +25,13 @@ return new class extends Migration
                 ->constrained('services')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->string('description')->nullable();
             $table->string('delivery_date');
             $table->string('delivery_time');
-            // $table->dateTime('delivery_time');
+            $table->string('location');
+            $table->string('description')->nullable();
             $table->enum('status', ['pending', 'process', 'rejected', 'finished'])
                 ->default('pending');
+            $table->unique(['customer_id', 'expert_id', 'service_id']);
             $table->timestamps();
         });
     }

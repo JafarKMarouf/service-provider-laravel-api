@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BookService;
+use App\Models\CustomerInfos;
 use App\Models\Payment;
 use App\Models\Service;
 use Illuminate\Support\Facades\Validator;
@@ -10,7 +11,6 @@ use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
-
     public function index()
     {
         try {
@@ -87,15 +87,15 @@ class PaymentController extends Controller
                 ->where('id', $request->book_service_id)
                 ->value('customer_id');
 
-            $service_id = BookService::query()
+            $expert_book_service = BookService::query()
                 ->where('id', $request->book_service_id)
-                ->value('service_id');
-
-            $expert_service = Service::query()
-                ->where('id', $service_id)
                 ->value('expert_id');
 
-            if (auth()->user()->id != $customer_book_service) {
+            $user_id = CustomerInfos::query()
+                ->where('id', $customer_book_service)
+                ->value('user_id');
+
+            if (auth()->user()->id != $user_id) {
                 return response()->json([
                     'status' => 'failed',
                     'message' => 'Access denied',
@@ -114,7 +114,7 @@ class PaymentController extends Controller
             }
             $payment =  Payment::create([
                 'book_service_id' => $request->book_service_id,
-                'payment_expert_id' => $expert_service,
+                'payment_expert_id' => $expert_book_service,
                 'amount' => $request->amount,
                 'operation_number' => $request->operation_number,
             ]);

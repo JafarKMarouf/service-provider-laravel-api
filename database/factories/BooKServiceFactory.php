@@ -48,6 +48,7 @@ class BooKServiceFactory extends Factory
             'description' => fake()->sentence,
             'delivery_date' => fake()->date('Y/m/d', 'now'),
             'delivery_time' => fake()->time(),
+            'location' => fake()->address(),
             'id' => ++$count,
         ];
     }

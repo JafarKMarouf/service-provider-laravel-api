@@ -30,16 +30,16 @@ class ExpertInfosFactory extends Factory
                 'password' => Hash::make('123456789'),
                 'role' => 'expert'
             ])->getAttribute('id'),
-            'service_id' => fake()->numberBetween(1, $service_count),
+            'service_id' => fake()->unique()->numberBetween(1, $service_count),
             'mobile' => fake()->unique()->phoneNumber,
             'city' => fake()->city,
             'country' => fake()->country,
-            'working_hours' => fake()->numberBetween(1, 24),
+            'working_hours' => fake()->numberBetween(1, 23),
             'description' => fake()->sentence,
             'rating' => random_int(0, 5),
             'price' => fake()->randomFloat(2, 10, 1000),
             'photo' => 'https://i.ibb.co/Fnw45yT/ellipse-121.jpg',
-            // 'photo' => URL::to('/') . '/storage/experts/' . time() . '.png',
+
         ];
     }
 }

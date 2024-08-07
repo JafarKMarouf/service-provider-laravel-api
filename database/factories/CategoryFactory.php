@@ -30,8 +30,6 @@ class CategoryFactory extends Factory
             'title' => fake()->unique()->word,
             'description' => fake()->sentence,
             'photo' => $photos[$count++],
-            // 'photo' => $photos[rand(0, count($photos) - 1)],
-            // 'photo' => URL::to('/') . '/storage/categories/' . time() . '.png',
         ];
     }
 }
