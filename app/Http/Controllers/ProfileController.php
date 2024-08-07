@@ -26,6 +26,7 @@ class ProfileController extends Controller
                     'working_hours',
                     'photo',
                     'price',
+                    'updated_at',
                 )
                     ->where('user_id', auth()->user()->id)
                     ->with('user:id,name,email,role')
@@ -36,11 +37,13 @@ class ProfileController extends Controller
                 ], 200);
             } else if (auth()->user()->role == 'customer') {
                 $customer = CustomerInfos::query()->select(
+                    'id',
                     'user_id',
                     'mobile',
                     'city',
                     'country',
                     'photo',
+                    'updated_at',
                 )
                     ->where('user_id', auth()->user()->id)
                     ->with('user:id,name,email,role')
@@ -74,7 +77,7 @@ class ProfileController extends Controller
                 'city' => 'string',
                 'description' => 'string|min:25|max:60',
                 'working_hours' => 'string',
-                'photo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'photo' => 'image|mimes:jpeg,png,jpg,gif,svg',
                 'price' => 'string'
             ]);
             if ($validate->fails()) {
@@ -87,53 +90,34 @@ class ProfileController extends Controller
 
             $role = auth()->user()->role;
             $user = User::find($id);
-
-            if ($request->name != null) {
-                $user->name = $request->name;
-            }
-            if ($request->password != null) {
-                $user->password = Hash::make($request->password);
-            }
-            if ($request->email != null) {
-                $user->email = $request->email;
-            }
+            $user->update([
+                'name' => $request->name ?? $user->name,
+                'email' => $request->email ?? $user->email,
+                'password' => Hash::make($request->password) ?? $user->password,
+            ]);
+            $filename = '';
             if ($role == 'expert') {
                 $expert_id = ExpertInfos::where('user_id', $id)->value('id');
                 $expert = ExpertInfos::find($expert_id);
                 if ($request->photo != null) {
-                    $ext = $request->file('photo')->getClientOriginalExtension();
-                    $filename = $this->saveImage($request->photo, $ext, 'experts');
-                    $expert->photo = $filename;
-                    $expert->save();
+                    $image = $request->file('photo');
+                    $filename = $this->uploadToImgBB($image);
                 }
-                if ($request->mobile != null) {
-                    $expert->mobile = $request->mobile;
-                }
+                $expert->update([
+                    'mobile' => $request->mobile ?? $expert->mobile,
+                    'country' => $request->country ?? $expert->country,
+                    'city' => $request->city ?? $expert->city,
+                    'working_hours' => $request->working_hours ?? $expert->working_hours,
+                    'price' => $request->price ?? $expert->price,
+                    'service_id' => $request->service_id ?? $expert->service_id,
+                    'photo' => $filename != '' ? $filename : $expert->photo,
+                ]);
 
-                if ($request->country != null) {
-                    $expert->country = $request->country;
-                }
 
-                if ($request->city != null) {
-                    $expert->city = $request->city;
-                }
-
-                if ($request->working_hours != null) {
-                    $expert->working_hours = $request->working_hours;
-                }
-                if ($request->price != null) {
-                    $expert->price = $request->price;
-                }
-                if ($request->service_id != null) {
-                    $expert->service_id = $request->service_id;
-                }
-
-                $user->save();
-                $expert->save();
                 $expert = ExpertInfos::query()
-                    ->select('id', 'user_id', 'service_id', 'mobile', 'country', 'city', 'description', 'rating', 'price', 'working_hours', 'photo')
+                    ->select('id', 'user_id', 'service_id', 'mobile', 'country', 'city', 'description', 'rating', 'price', 'working_hours', 'photo', 'updated_at',)
                     ->where('user_id', $id)
-                    ->with('user:id,name,email,role')
+                    ->with('user:id,name,email,role,updated_at')
                     ->get();
                 return response()->json([
                     'status' => 'success',
@@ -143,33 +127,26 @@ class ProfileController extends Controller
             } else if ($role == 'customer') {
                 $customer_id = CustomerInfos::where('user_id', $id)->value('id');
                 $customer = CustomerInfos::find($customer_id);
-
+                $filename = '';
                 if ($request->photo != null) {
-                    $ext = $request->file('photo')->getClientOriginalExtension();
-                    $filename = $this->saveImage($request->photo, $ext, 'customers');
-                    $customer->photo = $filename;
+                    $image = $request->file('photo');
+                    $filename = $this->uploadToImgBB($image);
                 }
 
-                if ($request->mobile != null) {
-                    $customer->mobile = $request->mobile;
-                }
+                $customer->update([
+                    'photo' => $filename != '' ? $filename : $customer->photo,
+                    'city' => $request->city ?? $customer->city,
+                    'country' => $request->country ?? $customer->country,
+                    'mobile' => $request->mobile ?? $customer->mobile,
+                ]);
 
-                if ($request->country != null) {
-                    $customer->country = $request->country;
-                }
-
-                if ($request->city != null) {
-                    $customer->city = $request->city;
-                }
-
-                $user->save();
-                $customer->save();
                 $customer = CustomerInfos::query()->select(
-                    'customer_id',
+                    'user_id',
                     'mobile',
                     'city',
                     'country',
                     'photo',
+                    'updated_at',
                 )
                     ->where('user_id', $id)
                     ->with('user:id,name,email,role')
@@ -177,7 +154,7 @@ class ProfileController extends Controller
                 return response()->json([
                     'status' => 'success',
                     'data' => $customer,
-                    'message' => 'Customer Updated Successfully'
+                    'message' => auth()->user()->name . ' Updated Successfully'
                 ], 200);
             }
         } catch (\Exception $e) {

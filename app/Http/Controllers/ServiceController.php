@@ -3,10 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\ExpertInfos;
 use App\Models\Service;
-use App\Models\User;
-use Google\Service\CloudFunctions\Retry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,7 +14,7 @@ class ServiceController extends Controller
         try {
             $service = Service::query()
                 ->with('category:id,title,description,photo')
-                ->with('expert:user_id,service_id,mobile,country,city,rating,price,photo,working_hours', 'expert.user:id,name')
+                ->with('expert:user_id,service_id,mobile,country,city,rating,description,price,photo,working_hours', 'expert.user:id,name,role')
                 ->get(['id', 'category_id', 'service_name', 'service_description', 'photo']);
             return response()->json([
                 'status' => 'success',
@@ -82,8 +79,8 @@ class ServiceController extends Controller
             }
             $service = Service::query()
                 ->where('id', $id)
-                ->with('category:id,title,description')
-                ->with('expert:user_id,service_id,mobile,country,city,rating,price,photo,working_hours', 'expert.user:id,name')
+                ->with('category:id,title,description,photo')
+                ->with('expert:user_id,service_id,mobile,country,city,rating,price,photo,working_hours', 'expert.user:id,name,role')
                 ->get(['id', 'category_id', 'service_name', 'service_description', 'photo']);
             return response()->json([
                 'status' => 'success',
@@ -123,8 +120,8 @@ class ServiceController extends Controller
             }
 
             if ($request->hasFile('photo')) {
-                $ext = $request->file('photo')->getClientOriginalExtension();
-                $filename = $this->saveImage($request->photo, $ext, 'services');
+                $image = $request->file('photo');
+                $filename = $this->uploadToImgBB($image);
                 $service->photo = $filename;
             }
 
@@ -192,7 +189,7 @@ class ServiceController extends Controller
             $service = Service::query()
                 ->where('category_id', $category_id)
                 ->with('category:id,title,description,photo')
-                ->with('expert:user_id,service_id,mobile,country,city,rating,price,photo,working_hours', 'expert.user:id,name')
+                ->with('expert:id,user_id,service_id,mobile,country,city,rating,description,price,photo,working_hours', 'expert.user:id,name,role')
                 ->get(['id', 'category_id', 'service_name', 'service_description', 'photo']);
             return response()->json([
                 'status' => 'success',

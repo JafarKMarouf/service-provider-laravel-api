@@ -21,18 +21,20 @@ class ServiceFactory extends Factory
     public function definition(): array
     {
         $category_count =  Category::all()->count();
-        $categorys = [];
-        for ($i = 1; $i < $category_count; $i++) {
-            array_push($categorys, $i);
-        }
-        $category_id = $this->faker->unique->randomElement($categorys);
+        $photos = [
+            'https://i.ibb.co/Sn6PBHv/2ef3b2e1a7e8.png',
+            'https://i.ibb.co/YpVTpR3/8816474b31d4.png',
+            'https://i.ibb.co/2Pbj1Pd/92e857a0f66f.png',
+            'https://i.ibb.co/TmXvDRZ/49dd9784bae7.png',
+            'https://i.ibb.co/30jGQ8z/705b91af40d4.png',
+            'https://i.ibb.co/hmyyH3x/5348849c13c0.png',
 
-
+        ];
         return [
-            'category_id' => $category_id,
+            'category_id' => fake()->numberBetween(1, $category_count),
             'service_name' => fake()->unique()->word,
             'service_description' => fake()->sentence,
-            'photo' => URL::to('/') . 'storage/services/' . time() . '.png',
+            'photo' => $photos[rand(0, count($photos) - 1)],
         ];
     }
 }

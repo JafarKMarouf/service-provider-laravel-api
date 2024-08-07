@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\BookService;
-use App\Models\ExpertInfos;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\CustomerInfos;
+use App\Models\ExpertInfos;
 use App\Models\Service;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -32,16 +33,23 @@ class BooKServiceFactory extends Factory
         $customer_and_service = $this->faker->unique->randomElement($customer_services);
         $customer_and_service = explode('-', $customer_and_service);
         $customer_id = $customer_and_service[0];
-        $service_id = $customer_and_service[1];
 
+        $expert_count = ExpertInfos::all()->count();
+        $expert = [];
+        for ($i = 1; $i < $expert_count; $i++) {
+            array_push($expert, $i);
+        }
+
+        static $count = 0;
         return [
             'customer_id' => $customer_id,
-            'service_id' => $service_id,
+            'expert_id' => $expert[$count],
+            'service_id' => ExpertInfos::where('id', $expert[$count])->value('service_id'),
             'description' => fake()->sentence,
-            'delivery_time' => fake()->dateTimeBetween(
-                now(),
-                now()->addDays(10)
-            ),
+            'delivery_date' => fake()->date('Y/m/d', 'now'),
+            'delivery_time' => fake()->time(),
+            'location' => fake()->address(),
+            'id' => ++$count,
         ];
     }
 }

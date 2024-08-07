@@ -31,7 +31,8 @@ class CustomerInfosFactory extends Factory
             'mobile' => fake()->unique()->phoneNumber,
             'city' => fake()->city,
             'country' => fake()->country,
-            'photo' => URL::to('/') . '/storage/customers/' . time() . '.png',
+            'photo' => 'https://i.ibb.co/BTdNvBw/ellipse-12.jpg'
+
         ];
     }
 }
