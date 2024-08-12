@@ -39,9 +39,18 @@ class PaymentController extends Controller
                     'message' => 'Not Found any payments yet for ' . auth()->user()->name,
                 ], 404);
             } else if (auth()->user()->role = 'customer') {
+                $user_id = auth()->user()->id;
+
+                $customer_id = CustomerInfos::where('user_id', $user_id)->value('id');
+                // return $customer_id;
                 $book_service_id = BookService::query()
-                    ->where('customer_id', auth()->user()->id)
+                    ->where('customer_id', $customer_id)
                     ->get('id');
+
+                // return $book_service_id;
+                // $book_service_id = BookService::query()
+                //     ->where('customer_id', auth()->user()->id)
+                //     ->get('id');
                 $payments = [];
                 for ($i = 0; $i < count($book_service_id); $i++) {
                     $payments_for_customer = Payment::query()

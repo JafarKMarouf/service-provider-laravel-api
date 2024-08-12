@@ -36,7 +36,7 @@ class ExpertInfosFactory extends Factory
             'country' => fake()->country,
             'working_hours' => fake()->numberBetween(1, 23),
             'description' => fake()->sentence,
-            'rating' => random_int(0, 5),
+            'rating' => random_int(1, 5),
             'price' => fake()->randomFloat(2, 10, 1000),
             'photo' => 'https://i.ibb.co/Fnw45yT/ellipse-121.jpg',
 

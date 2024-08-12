@@ -119,6 +119,7 @@ Route::middleware(['auth:sanctum'])->group(
             Route::prefix('book_service')->group(function () {
                 Route::get('/', [BookingServiceController::class, 'index']);
                 Route::get('/{book_id}', [BookingServiceController::class, 'show']);
+                Route::put('/{book_id}', [BookingServiceController::class, 'update']);
                 Route::delete('/{book_id}', [BookingServiceController::class, 'destroy']);
                 Route::get('freelancebyservices/{city}', [BookingServiceController::class, 'showFreelancers']);
             });

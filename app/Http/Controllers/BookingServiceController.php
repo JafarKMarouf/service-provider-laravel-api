@@ -15,6 +15,7 @@ class BookingServiceController extends Controller
     public function index()
     {
         try {
+
             if (auth()->user()->role == 'admin') {
                 $book_service = BookService::query()
                     ->with('customer:id,mobile,country,city,photo')
@@ -34,15 +35,6 @@ class BookingServiceController extends Controller
             if (auth()->user()->role == 'customer') {
                 $user_id = auth()->user()->id;
                 $customer_id = CustomerInfos::where('user_id', $user_id)->value('id');
-                $count = BookService::query()
-                    ->where('customer_id', $customer_id)
-                    ->count();
-                if (!$count > 0) {
-                    return response()->json([
-                        'status' => 'failed',
-                        'message' => 'Not Found any book service for you',
-                    ], 404);
-                }
 
                 $book_service = BookService::query()
                     ->where('customer_id', $customer_id)
@@ -154,7 +146,7 @@ class BookingServiceController extends Controller
             }
             if (auth()->user()->role == 'customer') {
                 $customer = BookService::query()->find($book_id)
-                    ->customer->id;
+                    ->customer->user->id;
                 if ($customer != auth()->user()->id) {
                     return response()->json([
                         'status' => 'failed',
@@ -263,6 +255,34 @@ class BookingServiceController extends Controller
                     'delivery_time' => $request->delivery_time ?? $book_service->delivery_time,
                     'delivery_date' => $request->delivery_date ?? $book_service->delivery_date,
                     'location' => $request->location ?? $book_service->location,
+                ]);
+                return response()->json([
+                    'status' => 'success',
+                    'book_service' => $book_service,
+                    'message' => 'Book service Updated Successfully',
+                ]);
+            }
+            if (auth()->user()->role == 'customer') {
+                $user_id = auth()->user()->id;
+                $customer_id = CustomerInfos::where('user_id', $user_id)->value('id');
+                $customer_book_id = BookService::where('id', $book_id)->value('customer_id');
+                if ($customer_book_id != $customer_id) {
+                    return response()->json([
+                        'status' => 'failed',
+                        'message' => 'Permission denied',
+                    ], 403);
+                }
+                $validate = Validator::make($request->all(), [
+                    'status' => ['required'],
+                ]);
+                if ($validate->fails()) {
+                    return response()->json([
+                        'status' => 'failed',
+                        'message' => $validate->errors(),
+                    ], 403);
+                }
+                $book_service->update([
+                    'status' => $request->status,
                 ]);
                 return response()->json([
                     'status' => 'success',
