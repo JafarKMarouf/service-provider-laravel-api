@@ -17,12 +17,12 @@ class Controller extends BaseController
         $image->storeAs('public/' . $path, $filename);
         return URL::to('/') . '/storage/' . $path . '/' . $filename;
     }
+
     public function uploadImage($request)
     {
         try {
 
             $response = $this->uploadToImgBB($$request);
-            // dd($response);
             return response()->json([
                 'image_url' => $response['data']['url'],
             ]);
@@ -36,13 +36,12 @@ class Controller extends BaseController
     public function uploadToImgBB($image)
     {
         try {
-            $apiKey = '87f4f68f5414c11412ea83ca75d6cb6c';
 
             $client = new \GuzzleHttp\Client();
             $response = $client->request('POST', 'https://api.imgbb.com/1/upload', [
                 'form_params' => [
                     'image' => base64_encode(file_get_contents($image->getRealPath())),
-                    'key' => $apiKey,
+                    'key' => env('IMAGEBB_API_KEY'),
                 ],
             ]);
             $json_decode = json_decode($response->getBody(), true);

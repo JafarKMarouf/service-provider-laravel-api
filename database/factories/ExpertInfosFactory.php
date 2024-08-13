@@ -6,7 +6,7 @@ use App\Models\Service;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\URL;
+
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ExpertInfos>
@@ -37,7 +37,7 @@ class ExpertInfosFactory extends Factory
             'working_hours' => fake()->numberBetween(1, 23),
             'description' => fake()->sentence,
             'rating' => random_int(1, 5),
-            'price' => fake()->randomFloat(2, 10, 1000),
+            'price' => fake()->numberBetween(1000, 150000),
             'photo' => 'https://i.ibb.co/Fnw45yT/ellipse-121.jpg',
 
         ];

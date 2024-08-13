@@ -42,30 +42,24 @@ class PaymentController extends Controller
                 $user_id = auth()->user()->id;
 
                 $customer_id = CustomerInfos::where('user_id', $user_id)->value('id');
-                // return $customer_id;
                 $book_service_id = BookService::query()
                     ->where('customer_id', $customer_id)
                     ->get('id');
 
-                // return $book_service_id;
-                // $book_service_id = BookService::query()
-                //     ->where('customer_id', auth()->user()->id)
-                //     ->get('id');
-                $payments = [];
                 for ($i = 0; $i < count($book_service_id); $i++) {
                     $payments_for_customer = Payment::query()
                         ->where('book_service_id', $book_service_id[$i]['id'],)
-                        ->with('bookservice')
+                        ->with('bookservice', 'bookservice.expert:id,mobile', 'bookservice.customer:id,mobile')
                         ->get();
                     if ($payments_for_customer->count() != 0) {
-                        $payments[$book_service_id[$i]['id']] = $payments_for_customer;
+                        $payments = $payments_for_customer;
                     }
                 }
                 if (count($payments)) {
                     return response()->json([
                         'status' => 'success',
-                        'count' => count($payments),
                         'data' => $payments,
+
                     ], 200);
                 }
                 return response()->json([
@@ -127,11 +121,13 @@ class PaymentController extends Controller
                 'amount' => $request->amount,
                 'operation_number' => $request->operation_number,
             ]);
-
+            $book_service_id = BookService::query()
+                ->where('id', $payment->book_service_id)
+                ->value('id');
+            $payment = $payment->with('bookservice')->find($payment->id);
             return response()->json([
                 'status' => 'sucess',
-                'data' => $payment,
-                'message' => 'Payment Created Successfully! '
+                'data' => [$payment],
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

@@ -63,6 +63,9 @@ class ProfileController extends Controller
 
     public function update(Request $request)
     {
+        // return $request->password;
+
+        // return $request->all();
         try {
             $id = auth()->user()->id;
 
@@ -87,13 +90,12 @@ class ProfileController extends Controller
                 ], 403);
             }
 
-
             $role = auth()->user()->role;
             $user = User::find($id);
             $user->update([
                 'name' => $request->name ?? $user->name,
                 'email' => $request->email ?? $user->email,
-                'password' => Hash::make($request->password) ?? $user->password,
+                'password' => $request->password != null ? Hash::make($request->password) : $user->password,
             ]);
             $filename = '';
             if ($role == 'expert') {
